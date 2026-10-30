@@ -1,0 +1,33 @@
+---
+import WhatsAppCTA from './WhatsAppCTA.astro';
+import { waMessages } from '../data/site';
+
+interface Props {
+  title?: string;
+  text?: string;
+  message?: string;
+  label?: string;
+  source?: string;
+}
+
+const {
+  title = 'Siap Bangun Kebersamaan Lewat Petualangan di Batu Malang?',
+  text = '',
+  message = waMessages.general,
+  label = 'Konsultasi Gratis',
+  source = 'cta-band',
+} = Astro.props;
+---
+
+<section id="konsultasi" class="container cta-wrapper" aria-labelledby="cta-title">
+  <div class="cta-banner">
+    <div class="cta-banner__content">
+      <h2 id="cta-title">{title}</h2>
+      {text && <p>{text}</p>}
+      <div class="cta-banner__action">
+        <WhatsAppCTA {label} {message} {source} class="cta-btn--pill" />
+      </div>
+    </div>
+  </div>
+</section>
+

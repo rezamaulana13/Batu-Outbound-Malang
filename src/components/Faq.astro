@@ -1,0 +1,125 @@
+---
+interface Props {
+  items: { q: string; a: string }[];
+  openFirst?: boolean;
+}
+
+const { items, openFirst = false } = Astro.props;
+---
+<div class="faq-container">
+  {items.map((f, i) => (
+    <details class="faq-card" open={openFirst && i === 0}>
+      <summary class="faq-summary">
+        <span class="faq-question">{f.q}</span>
+        <span class="faq-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="16" height="16">
+            <path d="M19 9l-7 7-7-7" />
+          </svg>
+        </span>
+      </summary>
+      <div class="faq-answer">
+        <p>{f.a}</p>
+      </div>
+    </details>
+  ))}
+</div>
+
+<style>
+  .faq-container {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    max-width: 860px;
+    margin: 0 auto;
+  }
+
+  .faq-card {
+    background: #ffffff;
+    border: 1px solid #dce8e0;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(24, 34, 48, 0.03);
+    transition: all 0.2s ease;
+  }
+
+  .faq-card:hover {
+    border-color: #175c4c;
+    box-shadow: 0 4px 14px rgba(23, 92, 76, 0.07);
+  }
+
+  .faq-card[open] {
+    border-color: #175c4c;
+    box-shadow: 0 4px 18px rgba(23, 92, 76, 0.08);
+  }
+
+  .faq-summary {
+    padding: 18px 22px;
+    font-size: 1.0313rem;
+    font-weight: 700;
+    color: var(--color-ink);
+    cursor: pointer;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    user-select: none;
+    transition: background 0.15s ease;
+  }
+
+  .faq-summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .faq-summary:hover {
+    background: #f7faf8;
+  }
+
+  .faq-card[open] .faq-summary {
+    background: #f2f8f5;
+    border-bottom: 1px solid #e1ece5;
+  }
+
+  .faq-question {
+    line-height: 1.45;
+  }
+
+  .faq-icon {
+    flex-shrink: 0;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: #eef7f2;
+    color: #175c4c;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.25s ease, background 0.2s ease, color 0.2s ease;
+  }
+
+  .faq-card:hover .faq-icon {
+    background: #dff0e6;
+  }
+
+  .faq-card[open] .faq-icon {
+    transform: rotate(180deg);
+    background: #175c4c;
+    color: #ffffff;
+  }
+
+  .faq-answer {
+    padding: 20px 24px;
+    color: #374151;
+    font-size: 0.9688rem;
+    line-height: 1.7;
+    background: #ffffff;
+  }
+
+  .faq-answer p {
+    margin: 0;
+  }
+
+  .faq-answer p + p {
+    margin-top: 12px;
+  }
+</style>

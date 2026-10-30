@@ -1,0 +1,351 @@
+---
+import Logo from './Logo.astro';
+import { site, nav } from '../data/site';
+
+const year = new Date().getFullYear();
+
+// Paket Praktis (Paket A, B, C, D)
+const practicalPackages = [
+  { code: 'Paket A', name: 'Outbound & Fun Games', desc: 'Rekreasi & Refreshing Tim', href: '/paket/paket-outbound-reguler/' },
+  { code: 'Paket B', name: 'Team Building & Sinergi', desc: 'Sinergi & Karakter Karyawan', href: '/paket/paket-team-building/' },
+  { code: 'Paket C', name: 'Adventure (Rafting, Jeep, Paintball)', desc: 'Tantangan Adrenalin Alami', href: '/paket/paket-rafting/' },
+  { code: 'Paket D', name: 'Gathering & Menginap 2D1N', desc: 'Paket Lengkap Villa / Glamping', href: '/paket/paket-gathering-perusahaan/' },
+];
+
+// Destinasi Pilihan Populer
+const popularDestinations = [
+  { name: 'Coban Rondo Batu', type: 'Hutan Pinus & Air Terjun', href: '/destinasi/coban-rondo/' },
+  { name: 'Coban Talun Adventure', type: 'Camp Ground & Offroad Jeep', href: '/destinasi/coban-talun/' },
+  { name: 'Kaliwatu Rafting', type: 'Arung Jeram Sungai Alami', href: '/destinasi/kaliwatu-rafting/' },
+  { name: 'Taman Wisata Selecta', type: 'Taman Bunga & Outbound Lapangan', href: '/destinasi/selecta-batu/' },
+  { name: 'Songgoriti & Tirta Nirwana', type: 'Kolam & Wisata Sejarah Pegunungan', href: '/destinasi/songgoriti/' },
+];
+---
+
+<footer class="site-footer">
+  <div class="container">
+    <!-- Grid 4 Kolom Utama -->
+    <div class="footer-grid">
+      <!-- Col 1: Brand & Kontak Singkat -->
+      <div class="footer-col footer-brand">
+        <a class="brand" href="/">
+          <Logo />
+          <span>{site.name}</span>
+        </a>
+        <p class="footer-tagline">
+          {site.tagline}. Provider outbound resmi & berlisensi BNSP di Kota Wisata Batu dan Malang.
+        </p>
+        <div class="footer-contact-info">
+          <div class="footer-contact-item">
+            <span class="contact-icon" aria-hidden="true">📱</span>
+            <a href={`https://wa.me/${site.whatsappNumber}`} target="_blank" rel="noopener noreferrer">
+              WA: {site.formattedPhone}
+            </a>
+          </div>
+          <div class="footer-contact-item">
+            <span class="contact-icon" aria-hidden="true">📍</span>
+            <span>Kota Wisata Batu, Jawa Timur</span>
+          </div>
+          <div class="footer-contact-item">
+            <span class="contact-icon" aria-hidden="true">🕒</span>
+            <span>Setiap Hari: 07.30 – 21.00 WIB</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Col 2: Paket Praktis (Paket A, B, C, D) -->
+      <div class="footer-col">
+        <h3 class="footer-col-title">Paket Outbound</h3>
+        <ul class="footer-practical-pkgs">
+          {practicalPackages.map((pkg) => (
+            <li>
+              <a href={pkg.href} class="practical-pkg-card">
+                <span class="pkg-tier-badge">{pkg.code}</span>
+                <div class="pkg-tier-info">
+                  <span class="pkg-tier-name">{pkg.name}</span>
+                  <span class="pkg-tier-desc">{pkg.desc}</span>
+                </div>
+              </a>
+            </li>
+          ))}
+          <li class="more-link-item">
+            <a href="/paket/" class="footer-view-all">
+              Buka Katalog Lengkap (18 Paket) →
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Col 3: Destinasi Populer -->
+      <div class="footer-col">
+        <h3 class="footer-col-title">Destinasi Pilihan</h3>
+        <ul class="footer-dest-list">
+          {popularDestinations.map((dest) => (
+            <li>
+              <a href={dest.href} class="dest-item-link">
+                <span class="dest-item-name">{dest.name}</span>
+                <span class="dest-item-type">{dest.type}</span>
+              </a>
+            </li>
+          ))}
+          <li class="more-link-item">
+            <a href="/destinasi/" class="footer-view-all">
+              Jelajahi 10+ Venue Alam →
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Col 4: Halaman Utama -->
+      <div class="footer-col">
+        <h3 class="footer-col-title">Halaman</h3>
+        <ul class="footer-nav-list">
+          {nav.map((n) => (
+            <li>
+              <a href={n.href}>{n.label}</a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+
+    <!-- Footer Bottom Copyright & Note -->
+    <div class="footer-bottom">
+      <span>© {year} <strong>{site.name}</strong>. Seluruh hak cipta dilindungi.</span>
+      <span class="footer-note">Layanan Outbound & Gathering Resmi di Kota Wisata Batu – Malang</span>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    background: #0b1611;
+    color: #c7d3cc;
+    padding-top: clamp(52px, 6.5vw, 76px);
+    padding-bottom: 32px;
+    margin-top: clamp(60px, 8vw, 96px);
+    border-top: 1px solid rgba(46, 107, 79, 0.25);
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* Subtle ambient lighting at the top border */
+  .site-footer::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 20%;
+    width: 60%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(52, 211, 153, 0.4), transparent);
+  }
+
+  .footer-grid {
+    display: grid;
+    gap: 36px;
+    grid-template-columns: 1fr;
+  }
+  @media (min-width: 640px) {
+    .footer-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  @media (min-width: 1024px) {
+    .footer-grid {
+      grid-template-columns: 1.45fr 1.25fr 1.15fr 0.95fr;
+      gap: 36px;
+    }
+  }
+
+  /* Brand Column */
+  .footer-brand .brand {
+    color: #ffffff;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 14px;
+    font-size: 1.25rem;
+    font-weight: 800;
+    text-decoration: none;
+  }
+  .footer-tagline {
+    font-size: 0.875rem;
+    line-height: 1.65;
+    color: #9cb1a5;
+    margin: 0 0 18px 0;
+  }
+  .footer-contact-info {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    font-size: 0.8438rem;
+    color: #b3c5bb;
+  }
+  .footer-contact-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .footer-contact-item a {
+    color: #34d399;
+    font-weight: 700;
+    text-decoration: none;
+  }
+  .footer-contact-item a:hover {
+    text-decoration: underline;
+  }
+
+  .footer-col-title {
+    font-size: 1.0313rem;
+    font-weight: 800;
+    color: #ffffff;
+    letter-spacing: -0.01em;
+    margin: 0 0 18px 0;
+  }
+
+  /* Paket Praktis A-D */
+  .footer-practical-pkgs {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .practical-pkg-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 7px 10px;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    text-decoration: none;
+    transition: all 0.2s ease;
+  }
+  .practical-pkg-card:hover {
+    background: rgba(23, 92, 76, 0.2);
+    border-color: rgba(52, 211, 153, 0.3);
+    transform: translateX(3px);
+  }
+  .pkg-tier-badge {
+    background: rgba(52, 211, 153, 0.15);
+    color: #34d399;
+    font-size: 0.6875rem;
+    font-weight: 800;
+    padding: 3px 6px;
+    border-radius: 4px;
+    letter-spacing: 0.02em;
+    flex-shrink: 0;
+  }
+  .pkg-tier-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .pkg-tier-name {
+    font-size: 0.8438rem;
+    font-weight: 700;
+    color: #e2ece5;
+    line-height: 1.3;
+  }
+  .pkg-tier-desc {
+    font-size: 0.7188rem;
+    color: #7d9688;
+  }
+
+  /* Destinasi List */
+  .footer-dest-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .dest-item-link {
+    display: flex;
+    flex-direction: column;
+    padding: 6px 10px;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    text-decoration: none;
+    transition: all 0.2s ease;
+  }
+  .dest-item-link:hover {
+    background: rgba(23, 92, 76, 0.2);
+    border-color: rgba(52, 211, 153, 0.3);
+    transform: translateX(3px);
+  }
+  .dest-item-name {
+    font-size: 0.8438rem;
+    font-weight: 700;
+    color: #e2ece5;
+  }
+  .dest-item-type {
+    font-size: 0.7188rem;
+    color: #7d9688;
+  }
+
+  /* Navigasi List */
+  .footer-nav-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+  }
+  .footer-nav-list a {
+    color: #c0d1c7;
+    font-size: 0.875rem;
+    text-decoration: none;
+    transition: color 0.15s ease, transform 0.15s ease;
+    display: inline-block;
+  }
+  .footer-nav-list a:hover {
+    color: #34d399;
+    transform: translateX(3px);
+  }
+
+  /* More Links */
+  .more-link-item {
+    margin-top: 6px;
+    padding-top: 8px;
+    border-top: 1px dashed rgba(255, 255, 255, 0.1);
+  }
+  .footer-view-all {
+    color: #34d399 !important;
+    font-weight: 700;
+    font-size: 0.8125rem;
+    text-decoration: none;
+    display: inline-block;
+  }
+  .footer-view-all:hover {
+    text-decoration: underline;
+  }
+
+  /* Footer Bottom */
+  .footer-bottom {
+    margin-top: 48px;
+    padding-top: 24px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    font-size: 0.8125rem;
+    color: #7d9688;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px 24px;
+  }
+  .footer-note {
+    color: #8da497;
+  }
+
+  @media (max-width: 1023px) {
+    .site-footer {
+      padding-bottom: 96px; /* Space for mobile floating buttons */
+    }
+  }
+</style>

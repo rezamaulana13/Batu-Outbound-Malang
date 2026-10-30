@@ -1,0 +1,209 @@
+---
+import Icons from './Icons.astro';
+import { site, waLink, waMessages } from '../data/site';
+
+interface Props {
+  waMessage?: string;
+}
+
+const { waMessage = waMessages.general } = Astro.props;
+const whatsappUrl = waLink(waMessage);
+---
+
+<aside class="float-dock" aria-label="Aksi Cepat">
+  <!-- Rollback (Kembali ke Atas) -->
+  <button
+    type="button"
+    class="dock-btn dock-rollback"
+    id="rollbackBtn"
+    aria-label="Kembali ke atas"
+    title="Kembali ke atas"
+  >
+    <Icons name="arrow-up" />
+    <span class="visually-hidden">Kembali ke atas</span>
+  </button>
+
+  <!-- WhatsApp Floating Button -->
+  <a
+    href={whatsappUrl}
+    class="dock-btn dock-wa"
+    target="_blank"
+    rel="noopener noreferrer"
+    aria-label={`Chat WhatsApp dengan ${site.name}`}
+    title="Hubungi WhatsApp"
+    data-wa-source="floating-action"
+  >
+    <Icons name="whatsapp" />
+    <span class="dock-tooltip">Chat WhatsApp</span>
+    <span class="visually-hidden">(Buka di tab baru)</span>
+  </a>
+</aside>
+
+<style>
+  /* ==========================================================================
+     FLOATING DOCK - CLEAN, MODERN & SIMPLE
+     ========================================================================== */
+  .float-dock {
+    position: fixed;
+    right: 24px;
+    bottom: 32px;
+    z-index: 999;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    pointer-events: none;
+  }
+
+  /* Base button */
+  .dock-btn {
+    pointer-events: auto;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+    outline: none;
+    user-select: none;
+  }
+
+  /* Rollback (Kembali ke Atas) */
+  .dock-rollback {
+    width: 38px;
+    height: 38px;
+    background: #ffffff;
+    color: #182230;
+    border: 1px solid #E6E8EC;
+    box-shadow: 0 2px 10px rgba(24, 34, 48, 0.1);
+    display: none;
+  }
+
+  .dock-rollback.is-visible {
+    display: grid;
+  }
+
+  .dock-rollback svg {
+    width: 17px;
+    height: 17px;
+  }
+
+  .dock-rollback:hover {
+    background: #182230;
+    color: #ffffff;
+    border-color: #182230;
+  }
+
+  /* WhatsApp Button */
+  .dock-wa {
+    position: relative;
+    width: 52px;
+    height: 52px;
+    background: #25D366;
+    color: #ffffff;
+    box-shadow: 0 4px 16px rgba(37, 211, 102, 0.4);
+  }
+
+  .dock-wa svg {
+    width: 28px;
+    height: 28px;
+    fill: currentColor;
+  }
+
+  .dock-wa:hover {
+    background: #20BA5A;
+    box-shadow: 0 6px 20px rgba(37, 211, 102, 0.55);
+  }
+
+  /* Tooltip WhatsApp */
+  .dock-tooltip {
+    display: none;
+    position: absolute;
+    right: calc(100% + 10px);
+    top: 50%;
+    transform: translateY(-50%);
+    white-space: nowrap;
+    background: #182230;
+    color: #ffffff;
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 0.8125rem;
+    font-weight: 700;
+    padding: 5px 11px;
+    border-radius: 6px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
+    pointer-events: none;
+  }
+
+  .dock-tooltip::after {
+    content: '';
+    position: absolute;
+    left: 100%;
+    top: 50%;
+    margin-top: -4px;
+    border-width: 4px 0 4px 5px;
+    border-style: solid;
+    border-color: transparent transparent transparent #182230;
+  }
+
+  @media (min-width: 768px) {
+    .dock-wa:hover .dock-tooltip {
+      display: block;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .float-dock {
+      right: 18px;
+      bottom: 24px;
+      gap: 8px;
+    }
+
+    .dock-wa {
+      width: 48px;
+      height: 48px;
+    }
+
+    .dock-wa svg {
+      width: 25px;
+      height: 25px;
+    }
+
+    .dock-rollback {
+      width: 36px;
+      height: 36px;
+    }
+
+    .dock-rollback svg {
+      width: 15px;
+      height: 15px;
+    }
+  }
+</style>
+
+<script>
+  function setupFloatingDock() {
+    const rollbackBtn = document.getElementById('rollbackBtn');
+    if (!rollbackBtn) return;
+
+    function handleScroll() {
+      if (window.scrollY > 200) {
+        rollbackBtn?.classList.add('is-visible');
+      } else {
+        rollbackBtn?.classList.remove('is-visible');
+      }
+    }
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll();
+
+    rollbackBtn.addEventListener('click', () => {
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+    });
+  }
+
+  setupFloatingDock();
+  document.addEventListener('astro:page-load', setupFloatingDock);
+</script>

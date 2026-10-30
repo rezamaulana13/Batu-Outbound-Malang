@@ -1,0 +1,327 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Media from '../components/Media.astro';
+import PackageCard from '../components/PackageCard.astro';
+import ArticleCard from '../components/ArticleCard.astro';
+import Faq from '../components/Faq.astro';
+import CtaBand from '../components/CtaBand.astro';
+import WhatsAppCTA from '../components/WhatsAppCTA.astro';
+import { getPackages, getArticles } from '../lib/content';
+import { generalFaqs, faqSchema } from '../data/faq';
+import { gallery } from '../data/gallery';
+import { site, waMessages } from '../data/site';
+
+const packages = await getPackages();
+const featured = (packages.filter((p) => p.data.featured).length ? packages.filter((p) => p.data.featured) : packages).slice(0, 3);
+const articles = (await getArticles()).slice(0, 3);
+const strip = gallery.slice(0, 3);
+---
+<BaseLayout
+  title="Outbound Batu Malang: Paket Gathering dan Team Building | Batu Outbound Malang"
+  description="Paket outbound, gathering, dan team building di Batu–Malang untuk perusahaan, sekolah, dan komunitas. Lihat pilihan paket dan konsultasi via WhatsApp."
+  path="/"
+  schema={[faqSchema]}
+>
+  <section class="hero" aria-label="Hero Outbound Batu Malang">
+    <div class="container">
+      <div class="hero__content">
+        <h1>Bangun kebersamaan lewat petualangan di Batu</h1>
+        <p class="lead">
+          Kegiatan outbound, gathering, dan team building untuk perusahaan, sekolah, komunitas, dan keluarga.
+          Pilih paket yang cocok, sesuaikan dengan tujuan acara, lalu minta penawaran lewat WhatsApp.
+        </p>
+        <div class="btn-row">
+          <WhatsAppCTA label="Konsultasi Sekarang" source="hero" class="hero-btn hero-btn--white" />
+          <a class="btn hero-btn hero-btn--outline" href="/paket/">Pelajari Layanan</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section: Tentang Batu Outbound Malang -->
+  <section class="section about-preview" aria-labelledby="h-about">
+    <div class="container about-grid">
+      <div class="about-visual">
+        <img 
+          src="/tentang-kami.webp" 
+          alt="Kegiatan Outbound dan Team Building di Batu Malang" 
+          class="about-img"
+          width="480"
+          height="360"
+          loading="lazy"
+        />
+      </div>
+      <div class="about-content">
+        <h2 id="h-about" class="about-title">Batu Outbound Malang</h2>
+        <p>
+          Batu Outbound Malang adalah provider jasa kegiatan luar ruang (outbound), team building, gathering perusahaan, dan edukasi alam profesional yang berpusat di kawasan sejuk Kota Wisata Batu dan Malang Raya.
+        </p>
+        <p>
+          Kami percaya kegiatan outbound bukan sekadar rekreasi semata. Setiap skenario simulasi kelompok, dinamika tim, dan tantangan alam dirancang khusus agar tim Anda semakin solid, memiliki kepemimpinan adaptif, dan membawa energi positif baru saat kembali ke rutinitas kerja.
+        </p>
+        <div class="about-action">
+          <a class="btn-pill-teal" href="/profil/">Pelajari Profil Kami Lebih Lanjut</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section: Mengapa Memilih Kami? -->
+  <section class="section why-us-section" aria-labelledby="h-why-us">
+    <div class="container">
+      <div class="why-us-head">
+        <h2 id="h-why-us" class="why-title">Mengapa Memilih Kami?</h2>
+        <p class="why-desc">
+          Komitmen kami dalam menghadirkan kegiatan outbound yang profesional, aman, dan berdampak nyata bagi kelompok Anda.
+        </p>
+      </div>
+
+      <div class="why-banner">
+        <div class="why-grid">
+          <div class="why-item">
+            <div class="why-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                <circle cx="9" cy="7" r="4"></circle>
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+              </svg>
+            </div>
+            <h3>Fasilitator Bersertifikat</h3>
+            <p>Pemandu berpengalaman yang terlatih mencairkan suasana dan membangun dinamika tim.</p>
+          </div>
+
+          <div class="why-item">
+            <div class="why-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+              </svg>
+            </div>
+            <h3>Standard Safety Tinggi</h3>
+            <p>Peralatan terawat standar petualangan outdoor, SOP keselamatan ketat, dan tim P3K siaga.</p>
+          </div>
+
+          <div class="why-item">
+            <div class="why-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="4" y1="21" x2="4" y2="14"></line>
+                <line x1="4" y1="10" x2="4" y2="3"></line>
+                <line x1="12" y1="21" x2="12" y2="12"></line>
+                <line x1="12" y1="8" x2="12" y2="3"></line>
+                <line x1="20" y1="21" x2="20" y2="16"></line>
+                <line x1="20" y1="12" x2="20" y2="3"></line>
+                <line x1="1" y1="14" x2="7" y2="14"></line>
+                <line x1="9" y1="8" x2="15" y2="8"></line>
+                <line x1="17" y1="16" x2="23" y2="16"></line>
+              </svg>
+            </div>
+            <h3>Program Kustom</h3>
+            <p>Rundown dan materi games dirancang sesuai tujuan acara, usia peserta, serta anggaran.</p>
+          </div>
+
+          <div class="why-item">
+            <div class="why-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+              </svg>
+            </div>
+            <h3>Transparan & Terpercaya</h3>
+            <p>Rincian paket dan biaya jelas di muka tanpa biaya tersembunyi, dengan legalitas resmi.</p>
+          </div>
+
+          <div class="why-item">
+            <div class="why-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+              </svg>
+            </div>
+            <h3>Dukungan Cepat</h3>
+            <p>Konsultasi langsung via WhatsApp, respons cepat, dan koordinasi fleksibel kapan saja.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="h-paket">
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <h2 id="h-paket">Pilihan paket outbound</h2>
+          <p>Mulai dari outbound reguler sampai gathering perusahaan. Harga tampil jika sudah dikonfirmasi; selain itu kami kirim penawaran setelah konsultasi.</p>
+        </div>
+        <a class="link-arrow" href="/paket/">Lihat semua paket</a>
+      </div>
+      <div class="grid grid--3">
+        {featured.map((p, i) => <PackageCard pkg={p} index={i} />)}
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--green" aria-labelledby="h-kegiatan">
+    <div class="container">
+      <div class="section-head"><h2 id="h-kegiatan">Kegiatan untuk berbagai kelompok</h2></div>
+      <ul class="chips">
+        <li><strong>Perusahaan</strong><span>Gathering, outing, dan team building untuk tim kantor.</span></li>
+        <li><strong>Sekolah</strong><span>Outbound pelajar dengan kegiatan kelompok dan pendampingan.</span></li>
+        <li><strong>Komunitas</strong><span>Acara kebersamaan dan permainan kelompok untuk organisasi.</span></li>
+        <li><strong>Keluarga dan grup privat</strong><span>Aktivitas luar ruang yang disesuaikan umur dan kemampuan.</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="h-alur">
+    <div class="container">
+      <div class="section-head"><h2 id="h-alur">Cara memesan</h2></div>
+      <ol class="steps steps--4">
+        <li><h3>Konsultasi</h3><p>Kirim jenis acara, jumlah peserta, dan rencana tanggal lewat WhatsApp.</p></li>
+        <li><h3>Sesuaikan</h3><p>Kami usulkan paket dan susunan kegiatan, lalu Anda beri masukan.</p></li>
+        <li><h3>Konfirmasi</h3><p>Isi paket, harga, dan ketentuan disepakati tertulis sebelum hari acara.</p></li>
+        <li><h3>Kegiatan berlangsung</h3><p>Fasilitator memandu briefing dan kegiatan sesuai kesepakatan.</p></li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="section section--tint" aria-labelledby="h-galeri">
+    <div class="container">
+      <div class="section-head">
+        <h2 id="h-galeri">Galeri kegiatan</h2>
+        <a class="link-arrow" href="/galeri/">Buka galeri</a>
+      </div>
+      <ul class="gallery" style="grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));">
+        {strip.map((g, i) => (
+          <li>
+            <figure>
+              <Media src={g.src} alt={g.alt} ratio="4x5" seed={i} tag={g.src ? '' : 'Foto asli menyusul'} />
+              <figcaption>{g.caption}</figcaption>
+            </figure>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  {articles.length > 0 && (
+    <section class="section" aria-labelledby="h-artikel">
+      <div class="container">
+        <div class="section-head">
+          <h2 id="h-artikel">Artikel panduan</h2>
+          <a class="link-arrow" href="/artikel/">Baca semua artikel</a>
+        </div>
+        <div class="grid grid--3">
+          {articles.map((a, i) => <ArticleCard article={a} index={i} />)}
+        </div>
+      </div>
+    </section>
+  )}
+
+  <section class="section section--green" aria-labelledby="h-area">
+    <div class="container cols-2">
+      <div>
+        <h2 id="h-area">Area layanan</h2>
+        <p class="lead">Kami melayani kegiatan di wilayah {site.serviceAreas.join(' dan ')}. Titik kegiatan ditentukan bersama sesuai paket dan jumlah peserta.</p>
+      </div>
+      <div class="panel panel--white">
+        <h3>Ingin tahu lokasi yang cocok?</h3>
+        <p>Tanyakan opsi lokasi saat konsultasi. Kami jelaskan akses, fasilitas, dan batasan tiap lokasi sebelum Anda memutuskan.</p>
+        <WhatsAppCTA label="Tanya lokasi & paket" message={waMessages.general} source="area" variant="secondary" />
+      </div>
+    </div>
+  </section>
+
+  <!-- Section: Testimoni Kata Mereka -->
+  <section class="section testimonials-section" aria-labelledby="h-testimoni">
+    <div class="container">
+      <div class="testimonials-head">
+        <h2 id="h-testimoni" class="testimonials-title">Kata Mereka</h2>
+        <p class="testimonials-desc">
+          Cerita seru dan pengalaman nyata dari para peserta yang telah merasakan petualangan bersama Batu Outbound Malang.
+        </p>
+      </div>
+
+      <div class="testimonials-grid">
+        <!-- Testimonial 1 -->
+        <div class="testimonial-card">
+          <img 
+            src="/avatar-1.webp" 
+            alt="Foto Reza Maulana Nehru" 
+            class="testimonial-avatar"
+            width="62"
+            height="62"
+            loading="lazy"
+          />
+          <span class="testimonial-quote-icon testimonial-quote-icon--left" aria-hidden="true">“</span>
+          <div class="testimonial-stars" aria-label="Rating 5 dari 5 bintang">★★★★★</div>
+          <p class="testimonial-text">
+            Awalnya mikir outbound bakal kaku dan capek doang, eh ternyata seru parah! Game-nya bikin tim kantor kami yang tadinya jaim jadi ketawa ngakak bareng seharian di Songgoriti. Fasilitatornya asik dan sabar banget!
+          </p>
+          <span class="testimonial-quote-icon testimonial-quote-icon--right" aria-hidden="true">”</span>
+          <div class="testimonial-author">
+            <h3 class="testimonial-name">Reza Maulana Nehru</h3>
+            <p class="testimonial-role">HR Manager PT Sinar Maju, Surabaya</p>
+          </div>
+        </div>
+
+        <!-- Testimonial 2 (Featured Card Tengah) -->
+        <div class="testimonial-card testimonial-card--featured">
+          <img 
+            src="/avatar-2.webp" 
+            alt="Foto Fara Dilla Ajeng Ayu Ning Tias" 
+            class="testimonial-avatar"
+            width="62"
+            height="62"
+            loading="lazy"
+          />
+          <span class="testimonial-quote-icon testimonial-quote-icon--left" aria-hidden="true">“</span>
+          <div class="testimonial-stars" aria-label="Rating 5 dari 5 bintang">★★★★★</div>
+          <p class="testimonial-text">
+            Gathering keluarga besar kami di Coban Rondo kemarin sukses berat! Dari anak-anak sampai orang tua semua ikut main game yang aman dan seru. Makan siangnya enak, fotonya juga bagus-bagus. Pokoknya mantap!
+          </p>
+          <span class="testimonial-quote-icon testimonial-quote-icon--right" aria-hidden="true">”</span>
+          <div class="testimonial-author">
+            <h3 class="testimonial-name">Fara Dilla Ajeng Ayu Ning Tias</h3>
+            <p class="testimonial-role">Koordinator Komunitas & Family Gathering</p>
+          </div>
+        </div>
+
+        <!-- Testimonial 3 -->
+        <div class="testimonial-card">
+          <img 
+            src="/avatar-3.webp" 
+            alt="Foto Moh. Aldi Fatkhurohman" 
+            class="testimonial-avatar"
+            width="62"
+            height="62"
+            loading="lazy"
+          />
+          <span class="testimonial-quote-icon testimonial-quote-icon--left" aria-hidden="true">“</span>
+          <div class="testimonial-stars" aria-label="Rating 5 dari 5 bintang">★★★★★</div>
+          <p class="testimonial-text">
+            Tantangan team building sama rafting di Kaliwatu bener-bener nagih! Chemistry anak-anak divisi langsung klop dan fresh lagi pas balik ke kantor. Rekomendasi banget buat yang mau ngadain outing seru di Batu!
+          </p>
+          <span class="testimonial-quote-icon testimonial-quote-icon--right" aria-hidden="true">”</span>
+          <div class="testimonial-author">
+            <h3 class="testimonial-name">Moh. Aldi Fatkhurohman</h3>
+            <p class="testimonial-role">Team Lead Tech Agency, Malang</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section: Pertanyaan yang Sering Ditanyakan (Centered) -->
+  <section class="section faq-section" aria-labelledby="h-faq">
+    <div class="container">
+      <div class="faq-head">
+        <h2 id="h-faq" class="faq-title">Pertanyaan yang Sering Ditanyakan</h2>
+        <p class="faq-desc">
+          Jawaban ringkas dan jujur atas pertanyaan yang sering diajukan sebelum memesan kegiatan outbound.
+        </p>
+      </div>
+      <Faq items={generalFaqs} />
+    </div>
+  </section>
+
+  <CtaBand source="home-bawah" />
+</BaseLayout>

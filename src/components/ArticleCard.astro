@@ -1,0 +1,21 @@
+---
+import Media from './Media.astro';
+import { articleUrl, formatDate, type Article } from '../lib/content';
+const { article, index = 0 } = Astro.props as { article: Article; index?: number };
+const d = article.data;
+---
+<article class="card">
+  <Media src={d.image} alt={d.imageAlt ?? ''} ratio="16x9" seed={index + 2} tag={d.image ? '' : 'Gambar artikel menyusul'} />
+  <div class="card__body">
+    <span class="badge badge--yellow">{d.category}</span>
+    <h3><a href={articleUrl(article.id)}>{d.title}</a></h3>
+    <p>{d.description}</p>
+    <div class="card__foot">
+      <span class="meta">
+        <time datetime={d.publishDate.toISOString().slice(0, 10)}>{formatDate(d.publishDate)}</time>
+        {d.readingMinutes ? ` · ${d.readingMinutes} menit baca` : ''}
+      </span>
+      <a class="link-arrow" href={articleUrl(article.id)}>Baca artikel<span class="visually-hidden">: {d.title}</span></a>
+    </div>
+  </div>
+</article>

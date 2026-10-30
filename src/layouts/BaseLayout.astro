@@ -1,0 +1,75 @@
+---
+import '../styles/global.css';
+import SEOHead from '../components/SEOHead.astro';
+import Navbar from '../components/Navbar.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import FloatingActions from '../components/FloatingActions.astro';
+import { site } from '../data/site';
+
+interface Crumb { label: string; href?: string }
+interface Props {
+  title: string;
+  description: string;
+  /** Path kanonik dengan trailing slash, mis. "/wisata/" */
+  path: string;
+  image?: string;
+  type?: 'website' | 'article';
+  noindex?: boolean;
+  breadcrumbs?: Crumb[];
+  schema?: Record<string, unknown>[];
+  published?: Date;
+  modified?: Date;
+  /** Pesan WhatsApp untuk tombol mengambang */
+  waMessage?: string;
+}
+const { title, description, path, image, type, noindex, breadcrumbs, schema = [], published, modified, waMessage } = Astro.props;
+const base = Astro.site ?? new URL('https://batuoutboundmalang.example');
+const abs = (p: string) => new URL(p, base).href;
+
+const orgSchema: Record<string, unknown> = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  '@id': abs('/#organization'),
+  name: site.name,
+  url: abs('/'),
+  areaServed: site.serviceAreas,
+  ...(site.email ? { email: site.email } : {}),
+  ...(site.socials.length ? { sameAs: site.socials.map((s) => s.href) } : {}),
+};
+const websiteSchema = { '@context': 'https://schema.org', '@type': 'WebSite', '@id': abs('/#website'), name: site.name, url: abs('/'), inLanguage: 'id-ID', publisher: { '@id': abs('/#organization') } };
+const crumbSchema = breadcrumbs && breadcrumbs.length > 1 ? {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: breadcrumbs.map((c, i) => ({
+    '@type': 'ListItem',
+    position: i + 1,
+    name: c.label,
+    ...(i < breadcrumbs.length - 1 && c.href ? { item: abs(c.href) } : {}),
+  })),
+} : null;
+const allSchema = [...(path === '/' ? [orgSchema, websiteSchema] : []), ...(crumbSchema ? [crumbSchema] : []), ...schema];
+---
+<!doctype html>
+<html lang={site.lang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#F4B400" />
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon.png" />
+    <link rel="icon" type="image/png" sizes="192x192" href="/favicon-192.png" />
+    <link rel="apple-touch-icon" href="/favicon-192.png" />
+    <meta name="generator" content={Astro.generator} />
+    <SEOHead {title} {description} {path} {image} {type} {noindex} {published} {modified} schema={allSchema} />
+  </head>
+  <body>
+    <a class="skip-link" href="#konten">Lewati ke konten utama</a>
+    <Navbar waMessage={waMessage} />
+    <main id="konten" tabindex="-1">
+      <slot />
+    </main>
+    <SiteFooter />
+    <FloatingActions waMessage={waMessage} />
+  </body>
+</html>

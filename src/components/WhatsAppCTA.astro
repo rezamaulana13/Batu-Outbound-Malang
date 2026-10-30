@@ -1,0 +1,21 @@
+---
+import Icons from './Icons.astro';
+import { waLink, waMessages } from '../data/site';
+
+interface Props {
+  label?: string;
+  message?: string;
+  variant?: 'primary' | 'secondary';
+  small?: boolean;
+  class?: string;
+  /** Untuk pelacakan klik (data attribute), mis. "paket-outbound-reguler" */
+  source?: string;
+}
+const { label = 'Konsultasi via WhatsApp', message = waMessages.general, variant = 'primary', small = false, class: extra = '', source = 'umum' } = Astro.props;
+const cls = ['btn', `btn--${variant}`, small ? 'btn--sm' : '', extra].filter(Boolean).join(' ');
+---
+<a class={cls} href={waLink(message)} target="_blank" rel="noopener noreferrer" data-wa-source={source}>
+  <Icons name="whatsapp" />
+  <span>{label}</span>
+  <span class="visually-hidden">(buka di tab baru)</span>
+</a>

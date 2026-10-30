@@ -1,0 +1,209 @@
+---
+import Media from './Media.astro';
+import { pkgUrl, categoryLabel, formatRupiah, type Pkg } from '../lib/content';
+
+interface Props {
+  pkg: Pkg;
+  index?: number;
+}
+
+const { pkg, index = 0 } = Astro.props;
+const d = pkg.data;
+
+// Deskripsi singkat padat untuk card (1-2 baris bersih)
+const shortDesc = d.description.length > 95 ? d.description.slice(0, 92) + '...' : d.description;
+
+// Ambil ringkasan 1-2 sasaran peserta terpenting tanpa teks panjang dalam kurung
+const shortSuitable = d.suitableFor.slice(0, 2).map((s) => s.split('(')[0].trim()).join(', ');
+
+// Ambil durasi ringkas (misal "1 Hari (08.30 – 14.30 WIB)" menjadi "1 Hari")
+const shortDuration = d.duration.split('(')[0].trim() || d.duration;
+---
+<article class="card card--pkg">
+  <div class="card__thumb-wrap">
+    <Media src={d.image} alt={d.imageAlt ?? ''} seed={index} tag={d.image ? '' : 'Foto paket'} />
+    <span class="card__badge">{categoryLabel[d.category]}</span>
+  </div>
+  <div class="card__body">
+    <h3 class="card__title">
+      <a href={pkgUrl(pkg.id)}>{d.title}</a>
+    </h3>
+    <p class="card__desc">{shortDesc}</p>
+    <ul class="card__facts">
+      <li>
+        <strong>Cocok untuk:</strong> {shortSuitable}{d.suitableFor.length > 2 ? ', dll' : ''}
+      </li>
+      <li>
+        <strong>Durasi:</strong> {shortDuration}
+      </li>
+    </ul>
+    <div class="card__foot">
+      <div class="price">
+        {d.priceFrom ? (
+          <>
+            <span class="price-num">Mulai {formatRupiah(d.priceFrom)}</span>
+            <small>/{d.priceUnit}</small>
+          </>
+        ) : (
+          <span class="price-custom">Konsultasi Penawaran</span>
+        )}
+      </div>
+      <a class="card__btn-detail" href={pkgUrl(pkg.id)}>
+        Lihat detail →
+        <span class="visually-hidden">: {d.title}</span>
+      </a>
+    </div>
+  </div>
+</article>
+
+<style>
+  .card--pkg {
+    display: flex;
+    flex-direction: column;
+    background: #ffffff;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    height: 100%;
+    box-shadow: 0 4px 16px rgba(24, 34, 48, 0.04);
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  }
+  .card--pkg:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 24px rgba(24, 34, 48, 0.08);
+    border-color: #cbd5e1;
+  }
+
+  .card__thumb-wrap {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 10;
+    overflow: hidden;
+    background: #e2e8f0;
+  }
+  .card__thumb-wrap :global(.media),
+  .card__thumb-wrap :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 0;
+  }
+  .card__badge {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    background: rgba(24, 34, 48, 0.85);
+    backdrop-filter: blur(4px);
+    color: #ffffff;
+    font-size: 0.7188rem;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 9999px;
+    letter-spacing: 0.3px;
+  }
+
+  .card__body {
+    display: flex;
+    flex-direction: column;
+    padding: 18px 20px 20px 20px;
+    flex: 1;
+    gap: 8px;
+  }
+
+  .card__title {
+    margin: 0;
+    font-size: 1.15rem;
+    line-height: 1.35;
+    font-weight: 800;
+  }
+  .card__title a {
+    color: var(--color-ink);
+    text-decoration: none;
+    transition: color 0.15s ease;
+  }
+  .card__title a:hover {
+    color: var(--color-green);
+  }
+
+  .card__desc {
+    margin: 0;
+    font-size: 0.875rem;
+    line-height: 1.55;
+    color: var(--color-muted);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .card__facts {
+    list-style: none;
+    margin: 6px 0 0 0;
+    padding: 10px 0 0 0;
+    border-top: 1px dashed var(--color-border);
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    font-size: 0.8125rem;
+    color: var(--color-text);
+  }
+  .card__facts li {
+    line-height: 1.4;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .card__facts strong {
+    color: var(--color-ink);
+    font-weight: 700;
+  }
+
+  .card__foot {
+    margin-top: auto;
+    padding-top: 14px;
+    border-top: 1px solid var(--color-border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+  }
+
+  .price {
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
+  }
+  .price-num {
+    font-size: 0.9688rem;
+    font-weight: 800;
+    color: var(--color-green);
+  }
+  .price small {
+    font-size: 0.7813rem;
+    color: var(--color-muted);
+    font-weight: 600;
+  }
+  .price-custom {
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: var(--color-muted);
+  }
+
+  .card__btn-detail {
+    font-size: 0.8125rem;
+    font-weight: 700;
+    color: var(--color-ink);
+    text-decoration: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+    background: #f4f6f3;
+    border: 1px solid var(--color-border);
+    transition: all 0.15s ease;
+    white-space: nowrap;
+  }
+  .card__btn-detail:hover {
+    background: var(--color-primary);
+    border-color: var(--color-primary);
+    color: var(--color-ink);
+  }
+</style>

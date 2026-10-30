@@ -1,0 +1,1066 @@
+---
+import Icons from './Icons.astro';
+import Logo from './Logo.astro';
+import { site, waLink, waMessages } from '../data/site';
+import { getPackages, pkgUrl } from '../lib/content';
+import { destinations, destinationUrl } from '../data/destinations';
+
+interface Props {
+  waMessage?: string;
+}
+
+const { waMessage = waMessages.general } = Astro.props;
+const currentPath = Astro.url.pathname;
+const whatsappUrl = waLink(waMessage);
+
+// Brand identity
+const brandName = site.name || 'Batu Outbound Malang';
+const brandShort = site.shortName || 'Batu Outbound';
+
+// Fetch packages and destinations for dropdowns
+const packages = await getPackages();
+const groupA = packages.filter((p) => p.data.category === 'outbound-team-building' || p.data.category === 'outbound' || p.data.category === 'team-building' || p.data.category === 'pelajar');
+const groupB = packages.filter((p) => p.data.category === 'adventure');
+const groupC = packages.filter((p) => p.data.category === 'gathering-rombongan' || p.data.category === 'gathering');
+const groupD = packages.filter((p) => p.data.category === 'kombinasi');
+
+function isCurrent(href: string): boolean {
+  if (href === '/') {
+    return currentPath === '/' || currentPath === '';
+  }
+  const cleanHref = href.split('#')[0];
+  if (!cleanHref || cleanHref === '/') return false;
+  return currentPath.startsWith(cleanHref);
+}
+---
+
+<header class="navbar-root" id="main-navbar">
+  <div class="navbar-container">
+    <!-- Brand Logo -->
+    <a class="navbar-brand" href="/" aria-label={`${brandName}, kembali ke beranda`}>
+      <Logo />
+      <span class="brand-text">
+        <strong class="brand-title">{brandShort}</strong>
+        <small class="brand-subtitle">Malang</small>
+      </span>
+    </a>
+
+    <!-- Desktop Navigation Links -->
+    <nav class="desktop-nav" aria-label="Navigasi Desktop">
+      <ul class="nav-links">
+        <!-- Beranda -->
+        <li class="nav-item">
+          <a
+            href="/"
+            class:list={['nav-link', { 'is-active': isCurrent('/') }]}
+            aria-current={isCurrent('/') ? 'page' : undefined}
+          >
+            Beranda
+          </a>
+        </li>
+
+        <!-- Profil -->
+        <li class="nav-item">
+          <a
+            href="/profil/"
+            class:list={['nav-link', { 'is-active': isCurrent('/profil/') }]}
+            aria-current={isCurrent('/profil/') ? 'page' : undefined}
+          >
+            Profil
+          </a>
+        </li>
+
+        <!-- Destinasi Dropdown -->
+        <li class="nav-item has-dropdown">
+          <a
+            href="/destinasi/"
+            class:list={['nav-link dropdown-trigger', { 'is-active': isCurrent('/destinasi/') }]}
+            aria-current={isCurrent('/destinasi/') ? 'page' : undefined}
+            aria-expanded="false"
+          >
+            <span>Destinasi</span>
+            <span class="chevron-icon" aria-hidden="true"><Icons name="chevron" /></span>
+          </a>
+          <div class="dropdown-menu" role="menu">
+            <div class="dropdown-header">
+              <span class="dropdown-title">Destinasi Outbound</span>
+              <a href="/destinasi/" class="dropdown-see-all">Semua Destinasi →</a>
+            </div>
+            <ul class="dropdown-list">
+              {destinations.map((dest) => (
+                <li role="none">
+                  <a href={destinationUrl(dest.id)} class="dropdown-item" role="menuitem">
+                    <strong class="dropdown-item-title">{dest.name}</strong>
+                    <span class="dropdown-item-desc">{dest.tagline}</span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </li>
+
+        <!-- Paket Dropdown -->
+        <li class="nav-item has-dropdown">
+          <a
+            href="/paket/"
+            class:list={['nav-link dropdown-trigger', { 'is-active': isCurrent('/paket/') }]}
+            aria-current={isCurrent('/paket/') ? 'page' : undefined}
+            aria-expanded="false"
+          >
+            <span>Paket</span>
+            <span class="chevron-icon" aria-hidden="true"><Icons name="chevron" /></span>
+          </a>
+          <div class="dropdown-menu dropdown-menu--grouped" role="menu">
+            <div class="dropdown-header">
+              <span class="dropdown-title">4 Kategori Paket Outbound Batu</span>
+              <a href="/paket/" class="dropdown-see-all">Semua Paket →</a>
+            </div>
+            <div class="dropdown-groups-grid">
+              <!-- Kolom A -->
+              <div class="d-group-col">
+                <a href="/paket/#kategori-a" class="d-group-title">
+                  <span class="d-badge badge--yellow">A</span>
+                  <strong>Outbound & Team Building</strong>
+                </a>
+                <ul class="d-group-items">
+                  {groupA.slice(0, 4).map((p) => (
+                    <li><a href={pkgUrl(p.id)} class="d-sub-link">{p.data.title}</a></li>
+                  ))}
+                </ul>
+              </div>
+
+              <!-- Kolom B -->
+              <div class="d-group-col">
+                <a href="/paket/#kategori-b" class="d-group-title">
+                  <span class="d-badge badge--orange">B</span>
+                  <strong>Paket Adventure</strong>
+                </a>
+                <ul class="d-group-items">
+                  {groupB.slice(0, 4).map((p) => (
+                    <li><a href={pkgUrl(p.id)} class="d-sub-link">{p.data.title}</a></li>
+                  ))}
+                </ul>
+              </div>
+
+              <!-- Kolom C -->
+              <div class="d-group-col">
+                <a href="/paket/#kategori-c" class="d-group-title">
+                  <span class="d-badge badge--green">C</span>
+                  <strong>Gathering & Rombongan</strong>
+                </a>
+                <ul class="d-group-items">
+                  {groupC.slice(0, 4).map((p) => (
+                    <li><a href={pkgUrl(p.id)} class="d-sub-link">{p.data.title}</a></li>
+                  ))}
+                </ul>
+              </div>
+
+              <!-- Kolom D -->
+              <div class="d-group-col">
+                <a href="/paket/#kategori-d" class="d-group-title">
+                  <span class="d-badge badge--blue">D</span>
+                  <strong>Paket Kombinasi</strong>
+                </a>
+                <ul class="d-group-items">
+                  {groupD.slice(0, 4).map((p) => (
+                    <li><a href={pkgUrl(p.id)} class="d-sub-link">{p.data.title}</a></li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </div>
+        </li>
+
+        <!-- Galeri -->
+        <li class="nav-item">
+          <a
+            href="/galeri/"
+            class:list={['nav-link', { 'is-active': isCurrent('/galeri/') }]}
+            aria-current={isCurrent('/galeri/') ? 'page' : undefined}
+          >
+            Galeri
+          </a>
+        </li>
+
+        <!-- Artikel -->
+        <li class="nav-item">
+          <a
+            href="/artikel/"
+            class:list={['nav-link', { 'is-active': isCurrent('/artikel/') }]}
+            aria-current={isCurrent('/artikel/') ? 'page' : undefined}
+          >
+            Artikel
+          </a>
+        </li>
+
+        <!-- Kontak -->
+        <li class="nav-item">
+          <a
+            href="/kontak/"
+            class:list={['nav-link', { 'is-active': isCurrent('/kontak/') }]}
+            aria-current={isCurrent('/kontak/') ? 'page' : undefined}
+          >
+            Kontak
+          </a>
+        </li>
+      </ul>
+    </nav>
+
+    <!-- Desktop WhatsApp CTA (Bersih, Rapi & Elegan) -->
+    <div class="desktop-actions">
+      <a
+        href={whatsappUrl}
+        class="navbar-cta-btn"
+        target="_blank"
+        rel="noopener noreferrer"
+        data-wa-source="navbar-desktop"
+        aria-label="Konsultasi via WhatsApp (Buka di tab baru)"
+      >
+        <span class="cta-icon" aria-hidden="true"><Icons name="whatsapp" /></span>
+        <span class="cta-label">WhatsApp</span>
+      </a>
+    </div>
+
+    <!-- Mobile Hamburger Toggle Button -->
+    <button
+      type="button"
+      class="mobile-toggle"
+      id="navbarOpenBtn"
+      aria-label="Buka menu navigasi"
+      aria-expanded="false"
+      aria-controls="mobileOverlayMenu"
+    >
+      <Icons name="menu" />
+    </button>
+  </div>
+
+  <!-- Mobile Menu Fullscreen Overlay (Bersih Tanpa Background Mencolok) -->
+  <div
+    class="mobile-overlay"
+    id="mobileOverlayMenu"
+    aria-hidden="true"
+    role="dialog"
+    aria-modal="true"
+    aria-label="Menu Navigasi Mobile"
+  >
+    <div class="mobile-overlay__header">
+      <a class="navbar-brand" href="/" aria-label={`${brandName}, kembali ke beranda`}>
+        <Logo />
+        <span class="brand-text">
+          <strong class="brand-title">{brandShort}</strong>
+          <small class="brand-subtitle">Malang</small>
+        </span>
+      </a>
+
+      <button
+        type="button"
+        class="mobile-close-btn"
+        id="navbarCloseBtn"
+        aria-label="Tutup menu navigasi"
+      >
+        <Icons name="close" />
+      </button>
+    </div>
+
+    <div class="mobile-overlay__body">
+      <nav aria-label="Navigasi Menu Mobile">
+        <ul class="mobile-nav-list">
+          <!-- Beranda -->
+          <li class="mobile-nav-item">
+            <a
+              href="/"
+              class:list={['mobile-nav-link', { 'is-active': isCurrent('/') }]}
+              aria-current={isCurrent('/') ? 'page' : undefined}
+              data-mobile-link
+            >
+              <span>Beranda</span>
+            </a>
+          </li>
+
+          <!-- Profil -->
+          <li class="mobile-nav-item">
+            <a
+              href="/profil/"
+              class:list={['mobile-nav-link', { 'is-active': isCurrent('/profil/') }]}
+              aria-current={isCurrent('/profil/') ? 'page' : undefined}
+              data-mobile-link
+            >
+              <span>Profil</span>
+            </a>
+          </li>
+
+          <!-- Destinasi Mobile with Accordion Toggle -->
+          <li class="mobile-nav-item mobile-accordion">
+            <div class="mobile-accordion-header">
+              <a
+                href="/destinasi/"
+                class:list={['mobile-nav-link', { 'is-active': isCurrent('/destinasi/') }]}
+                aria-current={isCurrent('/destinasi/') ? 'page' : undefined}
+                data-mobile-link
+              >
+                <span>Destinasi</span>
+              </a>
+              <button
+                type="button"
+                class="mobile-sub-toggle"
+                aria-expanded="false"
+                aria-label="Buka submenu destinasi"
+                data-acc-btn
+              >
+                <Icons name="chevron" />
+              </button>
+            </div>
+            <div class="mobile-submenu" data-acc-content hidden>
+              <a href="/destinasi/" class="mobile-sub-link" data-mobile-link>
+                <strong>→ Semua Destinasi</strong>
+              </a>
+              {destinations.map((dest) => (
+                <a href={destinationUrl(dest.id)} class="mobile-sub-link" data-mobile-link>
+                  <span>{dest.name}</span>
+                </a>
+              ))}
+            </div>
+          </li>
+
+          <!-- Paket Mobile with Accordion Toggle -->
+          <li class="mobile-nav-item mobile-accordion">
+            <div class="mobile-accordion-header">
+              <a
+                href="/paket/"
+                class:list={['mobile-nav-link', { 'is-active': isCurrent('/paket/') }]}
+                aria-current={isCurrent('/paket/') ? 'page' : undefined}
+                data-mobile-link
+              >
+                <span>Paket</span>
+              </a>
+              <button
+                type="button"
+                class="mobile-sub-toggle"
+                aria-expanded="false"
+                aria-label="Buka submenu paket"
+                data-acc-btn
+              >
+                <Icons name="chevron" />
+              </button>
+            </div>
+            <div class="mobile-submenu" data-acc-content hidden>
+              <a href="/paket/" class="mobile-sub-link" data-mobile-link>
+                <strong>→ Semua Katalog Paket Outbound</strong>
+              </a>
+              <div class="mobile-cat-divider">A. Outbound & Team Building</div>
+              {groupA.map((pkg) => (
+                <a href={pkgUrl(pkg.id)} class="mobile-sub-link mobile-sub-link--nested" data-mobile-link>
+                  <span>{pkg.data.title}</span>
+                </a>
+              ))}
+              <div class="mobile-cat-divider">B. Paket Adventure</div>
+              {groupB.map((pkg) => (
+                <a href={pkgUrl(pkg.id)} class="mobile-sub-link mobile-sub-link--nested" data-mobile-link>
+                  <span>{pkg.data.title}</span>
+                </a>
+              ))}
+              <div class="mobile-cat-divider">C. Gathering & Rombongan</div>
+              {groupC.map((pkg) => (
+                <a href={pkgUrl(pkg.id)} class="mobile-sub-link mobile-sub-link--nested" data-mobile-link>
+                  <span>{pkg.data.title}</span>
+                </a>
+              ))}
+              <div class="mobile-cat-divider">D. Paket Kombinasi</div>
+              {groupD.map((pkg) => (
+                <a href={pkgUrl(pkg.id)} class="mobile-sub-link mobile-sub-link--nested" data-mobile-link>
+                  <span>{pkg.data.title}</span>
+                </a>
+              ))}
+            </div>
+          </li>
+
+          <!-- Galeri -->
+          <li class="mobile-nav-item">
+            <a
+              href="/galeri/"
+              class:list={['mobile-nav-link', { 'is-active': isCurrent('/galeri/') }]}
+              aria-current={isCurrent('/galeri/') ? 'page' : undefined}
+              data-mobile-link
+            >
+              <span>Galeri</span>
+            </a>
+          </li>
+
+          <!-- Artikel -->
+          <li class="mobile-nav-item">
+            <a
+              href="/artikel/"
+              class:list={['mobile-nav-link', { 'is-active': isCurrent('/artikel/') }]}
+              aria-current={isCurrent('/artikel/') ? 'page' : undefined}
+              data-mobile-link
+            >
+              <span>Artikel</span>
+            </a>
+          </li>
+
+          <!-- Kontak -->
+          <li class="mobile-nav-item">
+            <a
+              href="/kontak/"
+              class:list={['mobile-nav-link', { 'is-active': isCurrent('/kontak/') }]}
+              aria-current={isCurrent('/kontak/') ? 'page' : undefined}
+              data-mobile-link
+            >
+              <span>Kontak</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+    </div>
+
+    <!-- Mobile Footer WhatsApp CTA -->
+    <div class="mobile-overlay__footer">
+      <a
+        href={whatsappUrl}
+        class="mobile-wa-btn"
+        target="_blank"
+        rel="noopener noreferrer"
+        data-wa-source="navbar-mobile-overlay"
+        aria-label="Hubungi WhatsApp (Buka di tab baru)"
+      >
+        <span class="cta-icon"><Icons name="whatsapp" /></span>
+        <span>Konsultasi WhatsApp</span>
+      </a>
+    </div>
+  </div>
+</header>
+
+<style>
+  /* ==========================================================================
+     NAVBAR BERSIH, RINGAN, TANPA DELAY & TANPA LATAR BELAKANG MENCOLOK
+     Latar navbar bersih, halaman aktif hanya di-bold tanpa kotak background.
+     ========================================================================== */
+  .navbar-root {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    width: 100%;
+    background: #ffffff;
+    border-bottom: 1px solid var(--color-border, #E6E8EC);
+  }
+
+  .navbar-container {
+    width: 100%;
+    max-width: calc(var(--container-width, 1200px) + var(--pad, 24px) * 2);
+    margin-inline: auto;
+    padding-inline: var(--pad, 24px);
+    height: 72px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+
+  /* Brand Logo & Text */
+  .navbar-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    color: var(--color-ink, #182230);
+  }
+
+  .brand-text {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.15;
+  }
+
+  .brand-title {
+    font-family: var(--font-heading, 'Manrope', sans-serif);
+    font-size: 1.1875rem;
+    font-weight: 800;
+    letter-spacing: -0.015em;
+    color: var(--color-ink, #182230);
+  }
+
+  .brand-subtitle {
+    font-family: var(--font-body, 'Inter', sans-serif);
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--color-muted, #667085);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  /* Desktop Navigation Links */
+  .desktop-nav {
+    display: none;
+    align-items: center;
+  }
+
+  .nav-links {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .nav-item {
+    position: relative;
+  }
+
+  /* Link navigasi biasa */
+  .nav-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 6px 4px;
+    font-family: var(--font-body, 'Inter', sans-serif);
+    font-size: 0.9688rem;
+    font-weight: 500;
+    color: var(--color-text, #354052);
+    text-decoration: none;
+    background: transparent;
+  }
+
+  .nav-link:hover {
+    color: var(--color-ink, #182230);
+  }
+
+  /* Halaman yang sedang aktif: CUKUP DI-BOLD & TANPA LATAR BELAKANG */
+  .nav-link.is-active {
+    font-weight: 800;
+    color: var(--color-ink, #182230);
+    background: transparent;
+  }
+
+  .chevron-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 15px;
+    height: 15px;
+    color: var(--color-muted, #667085);
+  }
+  .chevron-icon svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  /* Desktop Dropdown Menus - INSTAN TANPA ANIMASI/DELAY */
+  .has-dropdown {
+    position: relative;
+  }
+
+  .dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 300px;
+    background: #ffffff;
+    border: 1px solid var(--color-border, #E6E8EC);
+    border-radius: 10px;
+    box-shadow: 0 8px 24px rgba(24, 34, 48, 0.1);
+    padding: 8px;
+    z-index: 100;
+  }
+
+  /* Buka langsung saat hover/focus tanpa delay */
+  .has-dropdown:hover .dropdown-menu,
+  .has-dropdown:focus-within .dropdown-menu {
+    display: block;
+  }
+
+  .dropdown-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 6px 8px 8px;
+    border-bottom: 1px solid var(--color-border, #E6E8EC);
+    margin-bottom: 4px;
+  }
+
+  .dropdown-title {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--color-muted, #667085);
+  }
+
+  .dropdown-see-all {
+    font-size: 0.8125rem;
+    font-weight: 700;
+    color: var(--color-green, #2E6B4F);
+    text-decoration: none;
+  }
+  .dropdown-see-all:hover {
+    text-decoration: underline;
+  }
+
+  /* Mega Grouped Dropdown for Packages */
+  .dropdown-menu--grouped {
+    width: 780px;
+    max-width: 95vw;
+    left: 50%;
+    transform: translateX(-40%);
+    padding: 14px 18px 18px;
+  }
+  .dropdown-groups-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-top: 10px;
+  }
+  .d-group-col {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .d-group-title {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    text-decoration: none;
+    color: var(--color-ink, #182230);
+    font-size: 0.8125rem;
+    padding-bottom: 6px;
+    border-bottom: 2px solid var(--color-border, #E6E8EC);
+  }
+  .d-group-title:hover {
+    color: var(--color-green, #2E6B4F);
+  }
+  .d-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    font-size: 0.6875rem;
+    font-weight: 800;
+    flex-shrink: 0;
+  }
+  .badge--yellow {
+    background: #fef3c7;
+    color: #92400e;
+  }
+  .badge--orange {
+    background: #ffedd5;
+    color: #9a3412;
+  }
+  .badge--green {
+    background: #dcfce7;
+    color: #166534;
+  }
+  .badge--blue {
+    background: #e0f2fe;
+    color: #075985;
+  }
+  .d-group-items {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .d-sub-link {
+    display: block;
+    font-size: 0.8125rem;
+    color: var(--color-text, #475467);
+    text-decoration: none;
+    padding: 4px 6px;
+    border-radius: 4px;
+    line-height: 1.35;
+    transition: all 0.15s ease;
+  }
+  .d-sub-link:hover {
+    background: var(--color-green-soft, #EAF4ED);
+    color: var(--color-green, #2E6B4F);
+    font-weight: 600;
+  }
+
+  .mobile-cat-divider {
+    font-size: 0.75rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--color-muted, #667085);
+    padding: 10px 16px 4px;
+    background: #f8faf6;
+    border-top: 1px solid var(--color-border, #E6E8EC);
+    border-bottom: 1px solid var(--color-border, #E6E8EC);
+    margin-top: 6px;
+  }
+  .mobile-sub-link--nested {
+    padding-left: 24px;
+    font-size: 0.875rem;
+  }
+
+  .dropdown-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    max-height: 420px;
+    overflow-y: auto;
+  }
+
+  .dropdown-item {
+    display: flex;
+    flex-direction: column;
+    padding: 7px 10px;
+    border-radius: 6px;
+    text-decoration: none;
+  }
+
+  .dropdown-item:hover {
+    background-color: var(--color-green-soft, #EAF4ED);
+  }
+
+  .dropdown-item-title {
+    font-size: 0.9063rem;
+    font-weight: 700;
+    color: var(--color-ink, #182230);
+  }
+
+  .dropdown-item-desc {
+    font-size: 0.75rem;
+    color: var(--color-muted, #667085);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* Desktop WhatsApp CTA Button */
+  .desktop-actions {
+    display: none;
+    align-items: center;
+  }
+
+  .navbar-cta-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 42px;
+    padding: 8px 18px;
+    background-color: #25D366;
+    color: #ffffff;
+    font-family: var(--font-body, 'Inter', sans-serif);
+    font-size: 0.9375rem;
+    font-weight: 700;
+    text-decoration: none;
+    border-radius: 9999px;
+    border: 0;
+    box-shadow: 0 2px 8px rgba(37, 211, 102, 0.3);
+  }
+
+  .navbar-cta-btn:hover {
+    background-color: #20BA5A;
+  }
+
+  .navbar-cta-btn .cta-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    color: #ffffff;
+  }
+
+  .navbar-cta-btn .cta-icon svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  /* Mobile Hamburger Button */
+  .mobile-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    background: transparent;
+    color: var(--color-ink, #182230);
+    border: 1px solid var(--color-border, #E6E8EC);
+    border-radius: 8px;
+    cursor: pointer;
+  }
+
+  .mobile-toggle svg {
+    width: 24px;
+    height: 24px;
+  }
+
+  /* ==========================================================================
+     MOBILE FULLSCREEN OVERLAY - RINGAN & INSTAN
+     ========================================================================== */
+  .mobile-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100vh;
+    height: 100dvh;
+    z-index: 1000;
+    background-color: #ffffff;
+    flex-direction: column;
+    padding: 16px 20px 24px;
+    overflow-y: auto;
+  }
+
+  .mobile-overlay.is-open {
+    display: flex;
+  }
+
+  .mobile-overlay__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--color-border, #E6E8EC);
+    flex-shrink: 0;
+  }
+
+  .mobile-close-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    background: transparent;
+    border: 0;
+    color: var(--color-ink, #182230);
+    cursor: pointer;
+  }
+
+  .mobile-close-btn svg {
+    width: 26px;
+    height: 26px;
+  }
+
+  .mobile-overlay__body {
+    flex: 1 1 auto;
+    padding-top: 10px;
+  }
+
+  .mobile-nav-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .mobile-nav-item {
+    border-bottom: 1px solid var(--color-border, #E6E8EC);
+  }
+
+  .mobile-nav-item:last-child {
+    border-bottom: none;
+  }
+
+  .mobile-nav-link {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 48px;
+    padding: 8px 4px;
+    font-family: var(--font-heading, 'Manrope', sans-serif);
+    font-size: 1.125rem;
+    font-weight: 500;
+    color: var(--color-ink, #182230);
+    text-decoration: none;
+    background: transparent;
+  }
+
+  /* Aktif di Mobile: CUKUP DI-BOLD & TANPA LATAR BELAKANG */
+  .mobile-nav-link.is-active {
+    font-weight: 800;
+    background: transparent;
+    color: var(--color-ink, #182230);
+  }
+
+  /* Accordion styles inside mobile */
+  .mobile-accordion-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .mobile-accordion-header .mobile-nav-link {
+    flex: 1;
+  }
+
+  .mobile-sub-toggle {
+    width: 44px;
+    height: 44px;
+    display: grid;
+    place-items: center;
+    background: transparent;
+    border: 0;
+    color: var(--color-ink, #182230);
+    cursor: pointer;
+  }
+
+  .mobile-sub-toggle[aria-expanded="true"] {
+    transform: rotate(180deg);
+  }
+
+  .mobile-submenu {
+    display: flex;
+    flex-direction: column;
+    padding: 4px 0 12px 14px;
+    gap: 4px;
+  }
+
+  .mobile-submenu[hidden] {
+    display: none;
+  }
+
+  .mobile-sub-link {
+    display: block;
+    padding: 8px 10px;
+    font-size: 0.9375rem;
+    font-weight: 500;
+    color: var(--color-text, #354052);
+    text-decoration: none;
+    background: var(--color-page, #FFFDF7);
+    border-radius: 6px;
+  }
+
+  /* Mobile Footer */
+  .mobile-overlay__footer {
+    padding-top: 16px;
+    border-top: 1px solid var(--color-border, #E6E8EC);
+    margin-top: auto;
+    flex-shrink: 0;
+  }
+
+  .mobile-wa-btn {
+    width: 100%;
+    min-height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    background-color: #25D366;
+    color: #ffffff;
+    font-family: var(--font-body, 'Inter', sans-serif);
+    font-size: 1rem;
+    font-weight: 700;
+    text-decoration: none;
+    border-radius: 9999px;
+  }
+
+  .mobile-wa-btn .cta-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    color: #ffffff;
+  }
+
+  .mobile-wa-btn .cta-icon svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  /* ==========================================================================
+     MEDIA QUERIES (DESKTOP BREAKPOINT)
+     ========================================================================== */
+  @media (min-width: 1024px) {
+    .navbar-container {
+      height: 74px;
+    }
+
+    .desktop-nav {
+      display: flex;
+    }
+
+    .desktop-actions {
+      display: flex;
+    }
+
+    .mobile-toggle {
+      display: none;
+    }
+
+    .mobile-overlay {
+      display: none !important;
+    }
+  }
+
+  @media (min-width: 1200px) {
+    .nav-links {
+      gap: 20px;
+    }
+  }
+</style>
+
+<script>
+  function setupNavbar() {
+    const openBtn = document.getElementById('navbarOpenBtn');
+    const closeBtn = document.getElementById('navbarCloseBtn');
+    const overlay = document.getElementById('mobileOverlayMenu');
+    const mobileLinks = document.querySelectorAll('[data-mobile-link]');
+    const accordionButtons = document.querySelectorAll<HTMLButtonElement>('[data-acc-btn]');
+
+    if (!overlay || !openBtn || !closeBtn) return;
+
+    function openMenu() {
+      overlay?.classList.add('is-open');
+      overlay?.setAttribute('aria-hidden', 'false');
+      openBtn?.setAttribute('aria-expanded', 'true');
+      document.body.style.overflow = 'hidden';
+      closeBtn?.focus();
+    }
+
+    function closeMenu() {
+      overlay?.classList.remove('is-open');
+      overlay?.setAttribute('aria-hidden', 'true');
+      openBtn?.setAttribute('aria-expanded', 'false');
+      document.body.style.overflow = '';
+      openBtn?.focus();
+    }
+
+    openBtn.addEventListener('click', openMenu);
+    closeBtn.addEventListener('click', closeMenu);
+
+    // Accordion in mobile menu
+    accordionButtons.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const expanded = btn.getAttribute('aria-expanded') === 'true';
+        btn.setAttribute('aria-expanded', String(!expanded));
+        const content = btn.parentElement?.nextElementSibling as HTMLElement | null;
+        if (content) {
+          content.hidden = expanded;
+        }
+      });
+    });
+
+    mobileLinks.forEach((link) => {
+      link.addEventListener('click', () => {
+        closeMenu();
+      });
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && overlay?.classList.contains('is-open')) {
+        closeMenu();
+      }
+    });
+
+    window.addEventListener('resize', () => {
+      if (window.innerWidth >= 1024 && overlay?.classList.contains('is-open')) {
+        closeMenu();
+      }
+    });
+  }
+
+  setupNavbar();
+  document.addEventListener('astro:page-load', setupNavbar);
+</script>

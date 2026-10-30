@@ -1,0 +1,42 @@
+---
+/**
+ * Foto atau slot foto. Tanpa `src`, tampil pola kontur + label "Foto asli menyusul".
+ * Slot kosong hanya untuk development: ganti dengan foto asli sebelum rilis.
+ */
+interface Props {
+  src?: string | null;
+  alt?: string;
+  ratio?: '16x9' | '4x5' | 'sq' | 'default';
+  tag?: string;
+  loading?: 'lazy' | 'eager';
+  width?: number;
+  height?: number;
+  seed?: number;
+}
+const { src, alt = '', ratio = 'default', tag = 'Foto asli menyusul', loading = 'lazy', width, height, seed = 0 } = Astro.props;
+const cls = ratio === 'default' ? 'media' : `media media--${ratio}`;
+const shift = (seed % 5) * 14;
+---
+<div class={cls}>
+  {src ? (
+    <img src={src} alt={alt} loading={loading} decoding="async" width={width} height={height} />
+  ) : (
+    <>
+      <svg class="media__ph" viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false">
+        <rect width="400" height="300" fill="#EAF4ED"/>
+        <g fill="none" stroke="#2E6B4F" stroke-width="1.6" opacity=".34" transform={`translate(${shift} 0)`}>
+          <path d="M-60 250C40 210 90 240 170 190S300 90 460 120"/>
+          <path d="M-60 222C42 184 94 212 168 166S296 70 460 96"/>
+          <path d="M-60 194C44 158 98 184 166 142S292 50 460 72"/>
+          <path d="M-60 166C46 132 102 156 164 118S288 30 460 48"/>
+          <path d="M-60 138C48 106 106 128 162 94S284 10 460 24"/>
+          <path d="M-60 278C38 238 86 270 172 214S306 116 460 146"/>
+        </g>
+        <path d="M0 300V248c60-24 120-6 190-48s130-72 210-64v164Z" fill="#2E6B4F" opacity=".16"/>
+        <circle cx="300" cy="84" r="22" fill="#F4B400"/>
+        <circle cx="300" cy="84" r="34" fill="none" stroke="#F4B400" stroke-width="2" opacity=".5"/>
+      </svg>
+      {tag && <span class="media__tag">{tag}</span>}
+    </>
+  )}
+</div>

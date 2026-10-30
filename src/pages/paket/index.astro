@@ -1,0 +1,517 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PackageCard from '../../components/PackageCard.astro';
+import Faq from '../../components/Faq.astro';
+import CtaBand from '../../components/CtaBand.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import WhatsAppCTA from '../../components/WhatsAppCTA.astro';
+import { getPackages, pkgUrl, formatRupiah, categoryLabel } from '../../lib/content';
+import { generalFaqs } from '../../data/faq';
+import { waMessages } from '../../data/site';
+
+const packages = await getPackages();
+
+// Kelompokkan paket ke dalam 4 Cluster Utama
+const groupA = packages.filter((p) => p.data.category === 'outbound-team-building' || p.data.category === 'outbound' || p.data.category === 'team-building' || p.data.category === 'pelajar');
+const groupB = packages.filter((p) => p.data.category === 'adventure');
+const groupC = packages.filter((p) => p.data.category === 'gathering-rombongan' || p.data.category === 'gathering');
+const groupD = packages.filter((p) => p.data.category === 'kombinasi');
+
+const breadcrumbs = [{ label: 'Beranda', href: '/' }, { label: 'Paket Outbound' }];
+
+const itemList = {
+  '@context': 'https://schema.org',
+  '@type': 'ItemList',
+  itemListElement: packages.map((p, i) => ({
+    '@type': 'ListItem',
+    position: i + 1,
+    name: p.data.title,
+    url: new URL(pkgUrl(p.id), Astro.site).href,
+  })),
+};
+---
+<BaseLayout
+  title="Pilihan Paket Outbound Batu Malang: 4 Kategori Lengkap & Harga Terbaik"
+  description="Katalog lengkap paket outbound di Batu Malang terbagi dalam 4 kategori: Outbound & Team Building, Adventure, Gathering Rombongan, dan Paket Kombinasi Terpadu."
+  path="/paket/"
+  breadcrumbs={breadcrumbs}
+  schema={[itemList]}
+>
+  <!-- Hero Banner: Bersih, Terpusat, Full Jarak -->
+  <section class="page-hero">
+    <div class="container">
+      <h1>Katalog Paket Outbound & Petualangan Batu Malang</h1>
+      <p class="lead">
+        Agar memudahkan perencanaan acara Anda, seluruh kegiatan dikelompokkan ke dalam 4 pilihan utama: <strong>Outbound & Team Building</strong>, <strong>Wahana Adventure</strong>, <strong>Gathering Rombongan</strong>, dan <strong>Paket Kombinasi Populer</strong>.
+      </p>
+      <Breadcrumbs items={breadcrumbs} />
+      <div class="btn-row" style="margin-top:20px;">
+        <WhatsAppCTA label="Konsultasi & Minta Proposal" message={waMessages.general} source="paket-hero" />
+        <a href="#tabel-perbandingan" class="btn btn--secondary">Lihat Tabel Perbandingan Harga</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Navigasi Lompat Cepat 4 Kategori (Quick Jump Tabs) -->
+  <div class="category-tabs-sticky">
+    <div class="container">
+      <nav class="cat-pill-nav" aria-label="Lompat ke kategori paket">
+        <a href="#kategori-a" class="cat-pill">
+          <span class="pill-letter">A</span>
+          <span>Outbound & Team Building</span>
+        </a>
+        <a href="#kategori-b" class="cat-pill">
+          <span class="pill-letter">B</span>
+          <span>Paket Adventure</span>
+        </a>
+        <a href="#kategori-c" class="cat-pill">
+          <span class="pill-letter">C</span>
+          <span>Gathering & Rombongan</span>
+        </a>
+        <a href="#kategori-d" class="cat-pill">
+          <span class="pill-letter">D</span>
+          <span>Paket Kombinasi</span>
+        </a>
+        <a href="#tabel-perbandingan" class="cat-pill cat-pill--table">
+          <span>📊 Tabel Perbandingan</span>
+        </a>
+      </nav>
+    </div>
+  </div>
+
+  <div class="packages-catalog-wrap">
+    <!-- KELOMPOK A: Outbound & Team Building (Full Tengah Sederhana) -->
+    <section id="kategori-a" class="catalog-section" aria-labelledby="h-kat-a">
+      <div class="container">
+        <div class="pkg-header-center">
+          <h2 id="h-kat-a" class="pkg-title-center">Paket Outbound & Team Building</h2>
+          <p class="pkg-desc-center">
+            Simulasi kerja sama, fun games kekompakan, dan pembentukan karakter kepemimpinan di alam sejuk pegunungan Kota Batu.
+          </p>
+        </div>
+
+        <div class="grid grid--3">
+          {groupA.map((pkg, idx) => (
+            <PackageCard pkg={pkg} index={idx} />
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- KELOMPOK B: Paket Adventure (Full Tengah Sederhana) -->
+    <section id="kategori-b" class="catalog-section catalog-section--alt" aria-labelledby="h-kat-b">
+      <div class="container">
+        <div class="pkg-header-center">
+          <h2 id="h-kat-b" class="pkg-title-center">Paket Adventure & Wahana Alam</h2>
+          <p class="pkg-desc-center">
+            Wahana pemacu adrenalin di alam bebas: Offroad Jeep 4x4, Rafting Sungai Brantas, Paintball wargame, ATV, dan Glamping alam.
+          </p>
+        </div>
+
+        <div class="grid grid--3">
+          {groupB.map((pkg, idx) => (
+            <PackageCard pkg={pkg} index={idx} />
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- KELOMPOK C: Paket Gathering & Rombongan (Full Tengah Sederhana) -->
+    <section id="kategori-c" class="catalog-section" aria-labelledby="h-kat-c">
+      <div class="container">
+        <div class="pkg-header-center">
+          <h2 id="h-kat-c" class="pkg-title-center">Paket Gathering & Rombongan</h2>
+          <p class="pkg-desc-center">
+            Acara kebersamaan instansi kantor, family gathering keluarga besar, komunitas hobi, outing perusahaan, dan wisata edukasi sekolah.
+          </p>
+        </div>
+
+        <div class="grid grid--3">
+          {groupC.map((pkg, idx) => (
+            <PackageCard pkg={pkg} index={idx} />
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- KELOMPOK D: Paket Kombinasi Terpadu (Full Tengah Sederhana) -->
+    <section id="kategori-d" class="catalog-section catalog-section--alt" aria-labelledby="h-kat-d">
+      <div class="container">
+        <div class="pkg-header-center">
+          <h2 id="h-kat-d" class="pkg-title-center">Paket Kombinasi Paling Populer</h2>
+          <p class="pkg-desc-center">
+            Solusi hemat multi-aktivitas dalam satu hari atau menginap 2D1N: perpaduan Outbound dengan Paintball, Rafting, hingga Offroad Jeep.
+          </p>
+        </div>
+
+        <div class="grid grid--3">
+          {groupD.map((pkg, idx) => (
+            <PackageCard pkg={pkg} index={idx} />
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION RINGKASAN & TABEL PERBANDINGAN RAPI & BERSIH -->
+    <section id="tabel-perbandingan" class="section comparison-section" aria-labelledby="h-banding">
+      <div class="container">
+        <div class="pkg-header-center">
+          <h2 id="h-banding" class="pkg-title-center">Perbandingan Harga & Spesifikasi Paket</h2>
+          <p class="pkg-desc-center">
+            Bandingkan durasi, kapasitas rombongan, dan estimasi biaya per orang untuk memilih paket yang paling pas dengan rencana kegiatan Anda.
+          </p>
+        </div>
+
+        <!-- Kartu Wadah Tabel Modern -->
+        <div class="table-card">
+          <div class="table-responsive" role="region" aria-label="Tabel perbandingan paket outbound" tabindex="0">
+            <table class="comparison-table">
+              <thead>
+                <tr>
+                  <th scope="col" class="th-name">Nama Paket Outbound</th>
+                  <th scope="col" class="th-cat">Kategori</th>
+                  <th scope="col" class="th-dur">Durasi</th>
+                  <th scope="col" class="th-part">Kapasitas Peserta</th>
+                  <th scope="col" class="th-price">Estimasi Biaya</th>
+                  <th scope="col" class="th-action text-center">Aksi</th>
+                </tr>
+              </thead>
+              <tbody>
+                {packages.map((p) => {
+                  const shortDur = p.data.duration.split('(')[0].trim() || p.data.duration;
+                  return (
+                    <tr>
+                      <td class="td-name">
+                        <a href={pkgUrl(p.id)} class="table-pkg-link">
+                          <strong>{p.data.title}</strong>
+                        </a>
+                      </td>
+                      <td class="td-cat">
+                        <span class="badge-cat-pill">{categoryLabel[p.data.category]}</span>
+                      </td>
+                      <td class="td-dur">
+                        <span>{shortDur}</span>
+                      </td>
+                      <td class="td-part">
+                        <span class="part-text">{p.data.participants ? p.data.participants.split('(')[0].trim() : 'Sesuai rombongan'}</span>
+                      </td>
+                      <td class="td-price">
+                        {p.data.priceFrom ? (
+                          <div class="price-stack">
+                            <strong class="price-val">{formatRupiah(p.data.priceFrom)}</strong>
+                            <small class="price-sub">/{p.data.priceUnit}</small>
+                          </div>
+                        ) : (
+                          <span class="price-custom">Konsultasi</span>
+                        )}
+                      </td>
+                      <td class="td-action text-center">
+                        <a href={pkgUrl(p.id)} class="btn-table-action" aria-label={`Detail ${p.data.title}`}>
+                          Detail →
+                        </a>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+          <div class="table-footer-note">
+            <span>💡 <strong>Catatan:</strong> Seluruh harga di atas dapat disesuaikan fleksibel sesuai jumlah rombongan, pemilihan fasilitas menu, dan kebutuhan khusus instansi Anda.</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION: Pertanyaan yang Sering Ditanyakan (Persis Sesuai Referensi Gambar) -->
+    <section class="section faq-section" aria-labelledby="h-faq">
+      <div class="container">
+        <div class="faq-head">
+          <h2 id="h-faq" class="faq-title">Pertanyaan yang Sering Ditanyakan</h2>
+          <p class="faq-desc">
+            Jawaban ringkas dan jujur atas pertanyaan yang sering diajukan sebelum memesan kegiatan outbound.
+          </p>
+        </div>
+
+        <Faq items={generalFaqs} />
+      </div>
+    </section>
+  </div>
+
+  <CtaBand
+    title="Siap Merencanakan Outbound Seru di Batu Malang?"
+    text="Dapatkan penawaran harga terbaik, survey lokasi gratis, dan susunan rundown acara terpadu bersama tim profesional kami."
+    label="Konsultasi & Minta Proposal Gratis"
+    source="paket-index-bottom"
+  />
+</BaseLayout>
+
+<style>
+  /* Sticky Quick Jump Bar */
+  .category-tabs-sticky {
+    position: sticky;
+    top: 70px;
+    z-index: 30;
+    background: #ffffff;
+    border-bottom: 2px solid var(--color-border);
+    padding: 12px 0;
+    box-shadow: 0 4px 16px rgba(24, 34, 48, 0.06);
+  }
+  .cat-pill-nav {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    padding: 2px 0;
+  }
+  .cat-pill-nav::-webkit-scrollbar {
+    display: none;
+  }
+  @media (max-width: 680px) {
+    .cat-pill-nav {
+      justify-content: flex-start;
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      scrollbar-width: none;
+      padding-bottom: 4px;
+    }
+  }
+  a.cat-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 18px;
+    border-radius: 9999px;
+    background: #f1f4f0;
+    color: var(--color-ink) !important;
+    font-size: 0.875rem;
+    font-weight: 700;
+    text-decoration: none !important;
+    white-space: nowrap;
+    border: 1px solid #d8dfd6;
+    box-shadow: 0 2px 6px rgba(24, 34, 48, 0.04);
+    transition: all 0.2s ease;
+  }
+  a.cat-pill:hover {
+    background: var(--color-primary);
+    border-color: var(--color-primary);
+    color: var(--color-ink) !important;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(244, 180, 0, 0.3);
+  }
+  a.cat-pill--table {
+    background: #eef7f0;
+    border-color: #b8dec4;
+    color: var(--color-green) !important;
+  }
+  .pill-letter {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--color-ink);
+    color: #ffffff;
+    font-size: 0.7188rem;
+    font-weight: 800;
+  }
+
+  /* Catalog Sections */
+  .catalog-section {
+    padding: clamp(48px, 5.5vw, 72px) 0;
+    scroll-margin-top: 130px;
+  }
+  .catalog-section--alt {
+    background: #f8faf6;
+    border-top: 1px solid var(--color-border);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  /* Header Section Full Tengah 100% Solid & Bersih (Sesuai Referensi Gambar) */
+  .pkg-header-center {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    text-align: center !important;
+    margin: 0 auto 36px auto !important;
+    width: 100% !important;
+    max-width: 650px !important;
+  }
+  .pkg-title-center {
+    color: #175c4c !important;
+    font-family: var(--font-heading, 'Manrope', sans-serif) !important;
+    font-size: clamp(2rem, 3.5vw, 2.75rem) !important;
+    font-weight: 800 !important;
+    line-height: 1.2 !important;
+    letter-spacing: -0.02em !important;
+    margin: 0 0 10px 0 !important;
+    text-align: center !important;
+    max-width: 620px !important;
+    display: block !important;
+    width: 100% !important;
+  }
+  .pkg-desc-center {
+    color: var(--color-muted, #64748b) !important;
+    font-size: 1rem !important;
+    line-height: 1.6 !important;
+    max-width: 580px !important;
+    margin: 0 auto !important;
+    text-align: center !important;
+    display: block !important;
+    width: 100% !important;
+  }
+
+  .text-center {
+    text-align: center;
+  }
+
+  /* Comparison Table Section */
+  .comparison-section {
+    background: #f7faf7;
+    border-top: 1px solid var(--color-border);
+    border-bottom: 1px solid var(--color-border);
+    padding: clamp(56px, 6vw, 84px) 0;
+    scroll-margin-top: 120px;
+  }
+  .table-card {
+    background: #ffffff;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    box-shadow: 0 6px 24px rgba(24, 34, 48, 0.05);
+    overflow: hidden;
+    margin-top: 24px;
+  }
+  .table-responsive {
+    overflow-x: auto;
+    width: 100%;
+    scrollbar-width: thin;
+  }
+  .comparison-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+    font-size: 0.9063rem;
+  }
+
+  /* Table Header */
+  .comparison-table thead th {
+    background: #f2f7f3;
+    color: var(--color-ink);
+    font-size: 0.8125rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 16px 20px;
+    border-bottom: 2px solid #dbe6dd;
+    white-space: nowrap;
+  }
+
+  /* Table Body */
+  .comparison-table tbody tr {
+    border-bottom: 1px solid #edf2ee;
+    transition: background-color 0.15s ease;
+  }
+  .comparison-table tbody tr:nth-child(even) {
+    background-color: #fafcfb;
+  }
+  .comparison-table tbody tr:hover {
+    background-color: #eef7f1;
+  }
+  .comparison-table tbody td {
+    padding: 16px 20px;
+    vertical-align: middle;
+  }
+
+  /* Column Styles */
+  .td-name {
+    min-width: 220px;
+  }
+  .table-pkg-link {
+    color: var(--color-ink);
+    text-decoration: none;
+    font-size: 0.9375rem;
+    line-height: 1.4;
+    transition: color 0.15s ease;
+  }
+  .table-pkg-link:hover {
+    color: var(--color-green);
+    text-decoration: underline;
+  }
+
+  .badge-cat-pill {
+    display: inline-block;
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 9999px;
+    background: #eef4f0;
+    color: var(--color-green);
+    white-space: nowrap;
+    border: 1px solid #d5e5da;
+  }
+
+  .td-dur, .td-part {
+    color: var(--color-text);
+    white-space: nowrap;
+  }
+
+  .td-price {
+    white-space: nowrap;
+  }
+  .price-stack {
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
+  }
+  .price-val {
+    color: #137333;
+    font-weight: 800;
+    font-size: 0.9688rem;
+  }
+  .price-sub {
+    color: var(--color-muted);
+    font-size: 0.7813rem;
+  }
+  .price-custom {
+    color: var(--color-muted);
+    font-weight: 600;
+    font-size: 0.8438rem;
+  }
+
+  .btn-table-action {
+    display: inline-block;
+    padding: 6px 14px;
+    border-radius: 6px;
+    background: #ffffff;
+    border: 1px solid #c9d8ce;
+    font-size: 0.8125rem;
+    font-weight: 700;
+    color: var(--color-ink);
+    text-decoration: none;
+    white-space: nowrap;
+    transition: all 0.15s ease;
+  }
+  .btn-table-action:hover {
+    background: var(--color-primary);
+    border-color: var(--color-primary);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(244, 180, 0, 0.25);
+  }
+
+  .table-footer-note {
+    padding: 14px 20px;
+    background: #f7faf8;
+    border-top: 1px solid var(--color-border);
+    font-size: 0.8438rem;
+    color: var(--color-muted);
+    line-height: 1.5;
+  }
+
+  /* FAQ Section Styling */
+  .faq-section {
+    padding: clamp(56px, 6vw, 84px) 0;
+  }
+</style>

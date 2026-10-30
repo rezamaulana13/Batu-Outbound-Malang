@@ -1,0 +1,357 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import WhatsAppCTA from '../components/WhatsAppCTA.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import Faq from '../components/Faq.astro';
+import { site, waLink, waMessages } from '../data/site';
+import { destinations } from '../data/destinations';
+import { generalFaqs } from '../data/faq';
+
+const contactSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'ContactPage',
+  name: `Kontak ${site.name}`,
+  description: `Hubungi tim ${site.name} untuk konsultasi dan penawaran paket outbound, gathering, dan team building di Batu–Malang.`,
+  url: new URL('/kontak/', Astro.site ?? 'https://batuoutboundmalang.example').href,
+};
+const breadcrumbs = [{ label: 'Beranda', href: '/' }, { label: 'Kontak' }];
+---
+
+<BaseLayout
+  title={`Kontak & Konsultasi Paket Outbound | ${site.name}`}
+  description={`Hubungi ${site.name} untuk reservasi dan konsultasi gratis paket outbound, team building, dan gathering perusahaan di Kota Batu dan Malang via WhatsApp.`}
+  path="/kontak/"
+  breadcrumbs={breadcrumbs}
+  schema={[contactSchema]}
+>
+  <section class="page-hero">
+    <div class="container">
+      <h1>Hubungi Kami</h1>
+      <p class="lead">
+        Konsultasikan rencana kegiatan outbound, gathering, atau pelatihan kelompok Anda di Batu–Malang. Tim kami siap membantu menyusun rangkaian kegiatan yang tepat sasaran dan hemat anggaran.
+      </p>
+      <Breadcrumbs items={breadcrumbs} />
+    </div>
+  </section>
+
+  <section class="section contact-section">
+    <div class="container">
+      <div class="contact-grid">
+        <!-- Form Cepat Kirim Pesan WhatsApp -->
+        <div class="contact-form-card">
+          <h2>Formulir Cepat via WhatsApp</h2>
+          <p class="meta" style="margin-bottom:20px;">
+            Isi detail singkat di bawah ini, tombol akan otomatis menyusun pesan rapi dan langsung membuka WhatsApp kami tanpa perlu mengetik manual.
+          </p>
+
+          <form id="waConsultForm" class="consult-form" onsubmit="return false;">
+            <div class="form-group">
+              <label for="clientName">Nama Anda / Instansi *</label>
+              <input type="text" id="clientName" placeholder="Contoh: Bpk. Budi - PT Maju Bersama" required />
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="eventType">Jenis Acara *</label>
+                <select id="eventType">
+                  <option value="Gathering Perusahaan">Gathering Perusahaan / Kantor</option>
+                  <option value="Team Building">Team Building & Leadership</option>
+                  <option value="Outbound Reguler / Komunitas">Outbound Reguler / Komunitas</option>
+                  <option value="Outbound Pelajar / Sekolah">Outbound Pelajar / Sekolah</option>
+                  <option value="Family Gathering">Family Gathering</option>
+                  <option value="Lainnya">Lainnya (Custom)</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="participantCount">Jumlah Peserta (Perkiraan) *</label>
+                <input type="number" id="participantCount" placeholder="Contoh: 50" min="5" required />
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="targetDate">Rencana Tanggal Pelaksanaan</label>
+                <input type="date" id="targetDate" />
+              </div>
+
+              <div class="form-group">
+                <label for="preferredLocation">Pilihan Lokasi / Destinasi</label>
+                <select id="preferredLocation">
+                  <option value="Belum Tahu (Minta Rekomendasi)">Belum Tahu (Minta Rekomendasi)</option>
+                  {destinations.map((d) => (
+                    <option value={d.name}>{d.name}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="specialNotes">Kebutuhan Khusus / Catatan Tambahan</label>
+              <textarea id="specialNotes" rows="3" placeholder="Contoh: Butuh paket 2 hari 1 malam termasuk penginapan dan konsumsi."></textarea>
+            </div>
+
+            <button type="submit" class="btn btn--primary" id="sendWaBtn" style="width:100%; min-height:50px;">
+              <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20" aria-hidden="true">
+                <path d="M12.04 2a9.9 9.9 0 0 0-8.4 15.1L2 22l5.05-1.6A9.9 9.9 0 1 0 12.04 2Zm0 1.8a8.1 8.1 0 1 1-4.3 14.96l-.3-.19-3 .96.98-2.93-.2-.31A8.1 8.1 0 0 1 12.04 3.8Zm-3.2 3.9c-.2 0-.5.07-.75.35-.26.28-1 1-1 2.4 0 1.43 1.03 2.8 1.17 3 .15.2 2 3.2 4.95 4.36 2.45.96 2.95.77 3.48.72.54-.05 1.73-.7 1.97-1.4.25-.68.25-1.27.18-1.4-.07-.12-.27-.2-.57-.35s-1.73-.86-2-.95c-.27-.1-.47-.15-.66.15-.2.3-.76.95-.93 1.15-.17.2-.34.22-.64.07-.3-.15-1.26-.47-2.4-1.5-.9-.8-1.5-1.78-1.67-2.08-.17-.3-.02-.46.13-.6.13-.14.3-.35.45-.52.15-.18.2-.3.3-.5.1-.2.05-.37-.02-.52-.08-.15-.66-1.6-.9-2.18-.24-.57-.48-.5-.66-.5Z"/>
+              </svg>
+              <span>Kirim via WhatsApp Sekarang</span>
+            </button>
+          </form>
+        </div>
+
+        <!-- Kartu Saluran Komunikasi & Info Layanan -->
+        <div class="contact-info-col">
+          <div class="panel panel--white" style="margin-bottom:24px;">
+            <h3>Konsultasi Langsung</h3>
+            <p>Ingin berbicara langsung dengan tim kami tanpa mengisi formulir? Klik tombol cepat di bawah ini:</p>
+            <div style="margin-top:16px;">
+              <WhatsAppCTA label="Buka Chat WhatsApp" source="kontak-direct" />
+            </div>
+          </div>
+
+          <div class="panel">
+            <h3>Informasi Operasional</h3>
+            <dl class="facts">
+              <div>
+                <dt>WhatsApp / Telepon</dt>
+                <dd><a href={waLink(waMessages.general)} target="_blank" rel="noopener noreferrer" style="color:var(--color-green); font-weight:700;">{site.formattedPhone}</a></dd>
+              </div>
+              <div>
+                <dt>Waktu Respon WhatsApp</dt>
+                <dd>Setiap Hari: 07.30 – 21.00 WIB</dd>
+              </div>
+              <div>
+                <dt>Area Layanan Outbound</dt>
+                <dd>{site.serviceAreas.join(', ')} & Sekitarnya</dd>
+              </div>
+              <div>
+                <dt>Pilihan Destinasi</dt>
+                <dd>{destinations.map((d) => d.shortName).join(', ')}</dd>
+              </div>
+              <div>
+                <dt>Format Penawaran</dt>
+                <dd>PDF Rincian Kegiatan & Biaya Resmi</dd>
+              </div>
+            </dl>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Langkah Alur Pemesanan -->
+  <section class="section section--tint" aria-labelledby="h-alur-kontak">
+    <div class="container">
+      <div class="section-head">
+        <h2 id="h-alur-kontak">Alur Pemesanan & Konsultasi</h2>
+      </div>
+      <ol class="steps steps--4">
+        <li>
+          <h3>1. Sampaikan Rencana</h3>
+          <p>Kirimkan perkiraan jumlah peserta, jenis kelompok, dan tanggal rencana kegiatan lewat WhatsApp.</p>
+        </li>
+        <li>
+          <h3>2. Terima Opsi Paket</h3>
+          <p>Kami mengirimkan rincian kegiatan, pilihan lokasi yang sesuai, serta estimasi biaya yang transparan.</p>
+        </li>
+        <li>
+          <h3>3. Penyesuaian & Finalisasi</h3>
+          <p>Diskusikan rundown, menu konsumsi, atau akomodasi hingga sesuai dengan kesepakatan kelompok.</p>
+        </li>
+        <li>
+          <h3>4. Pelaksanaan Acara</h3>
+          <p>Tim instruktur dan fasilitator kami memandu seluruh rangkaian kegiatan hingga selesai dengan aman.</p>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- FAQ Konsultasi & Pembayaran -->
+  <section class="section faq-section" aria-labelledby="h-faq-kontak">
+    <div class="container">
+      <div class="faq-header-center">
+        <span class="faq-badge">BANTUAN & INFORMASI</span>
+        <h2 id="h-faq-kontak">Pertanyaan Seputar Konsultasi</h2>
+        <p class="faq-subtitle">
+          Pertanyaan yang paling sering diajukan mengenai konsultasi, alur reservasi, dan sistem pembayaran outbound di Kota Batu.
+        </p>
+      </div>
+      <Faq items={generalFaqs} />
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .contact-section {
+    padding-top: clamp(48px, 6vw, 76px);
+  }
+
+  .contact-grid {
+    display: grid;
+    gap: 32px;
+  }
+  @media (min-width: 960px) {
+    .contact-grid {
+      grid-template-columns: 1.3fr 0.9fr;
+      gap: 44px;
+      align-items: start;
+    }
+  }
+
+  .contact-form-card {
+    background: #ffffff;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: 28px 24px;
+    box-shadow: 0 4px 18px rgba(24, 34, 48, 0.06);
+  }
+  @media (min-width: 640px) {
+    .contact-form-card {
+      padding: 36px 32px;
+    }
+  }
+
+  .consult-form {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  .form-row {
+    display: grid;
+    gap: 16px;
+  }
+  @media (min-width: 640px) {
+    .form-row {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .form-group label {
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: var(--color-ink);
+  }
+
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    width: 100%;
+    padding: 11px 14px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    font-family: var(--font-body);
+    font-size: 0.9375rem;
+    color: var(--color-ink);
+    background: #ffffff;
+    outline: none;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  /* Custom dropdown styling agar icon panah pas & tidak raksasa */
+  .form-group select {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-color: #ffffff;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23334155' stroke-width='2.2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    background-size: 14px 14px;
+    padding-right: 38px;
+    cursor: pointer;
+    line-height: 1.4;
+  }
+
+  .form-group input:focus,
+  .form-group select:focus,
+  .form-group textarea:focus {
+    border-color: #175c4c;
+    box-shadow: 0 0 0 3px rgba(23, 92, 76, 0.12);
+  }
+
+  .contact-info-col {
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* FAQ Styling */
+  .faq-section {
+    background: #fbfdfc;
+    border-top: 1px solid var(--color-border);
+    padding-top: clamp(48px, 6vw, 72px);
+    padding-bottom: clamp(56px, 7vw, 84px);
+  }
+  .faq-header-center {
+    max-width: 760px;
+    margin: 0 auto 36px auto;
+    text-align: center;
+  }
+  .faq-badge {
+    display: inline-block;
+    padding: 4px 14px;
+    border-radius: 9999px;
+    background: #e6f4ed;
+    color: #175c4c;
+    font-size: 0.75rem;
+    font-weight: 800;
+    letter-spacing: 0.05em;
+    margin-bottom: 12px;
+  }
+  .faq-header-center h2 {
+    font-size: clamp(1.75rem, 3.2vw, 2.35rem);
+    font-weight: 800;
+    color: var(--color-ink);
+    margin: 0 0 10px 0;
+    line-height: 1.25;
+  }
+  .faq-subtitle {
+    font-size: 1rem;
+    color: var(--color-muted);
+    line-height: 1.6;
+    margin: 0;
+  }
+</style>
+
+<script>
+  function setupWaForm() {
+    const form = document.getElementById('waConsultForm');
+    if (!form) return;
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      const name = (document.getElementById('clientName') as HTMLInputElement)?.value.trim() || '-';
+      const eventType = (document.getElementById('eventType') as HTMLSelectElement)?.value || '-';
+      const participants = (document.getElementById('participantCount') as HTMLInputElement)?.value.trim() || '-';
+      const date = (document.getElementById('targetDate') as HTMLInputElement)?.value || 'Menyesuaikan';
+      const location = (document.getElementById('preferredLocation') as HTMLSelectElement)?.value || 'Minta saran lokasi';
+      const notes = (document.getElementById('specialNotes') as HTMLTextAreaElement)?.value.trim() || 'Tidak ada';
+
+      const message = `Halo Admin Batu Outbound Malang, saya sedang mencari informasi kegiatan wisata & outbound di Batu Malang.\n\n` +
+        `Mohon info rekomendasi paket untuk rencana kegiatan kami:\n` +
+        `- Nama Instansi / Pemesan: ${name}\n` +
+        `- Jenis Kegiatan: ${eventType}\n` +
+        `- Estimasi Jumlah Peserta: ${participants} orang\n` +
+        `- Rencana Tanggal: ${date}\n` +
+        `- Pilihan Lokasi: ${location}\n` +
+        `- Kebutuhan Khusus: ${notes}\n\n` +
+        `Boleh minta katalog penawaran lengkap dan estimasi biayanya? Terima kasih!`;
+
+      // Redirect to WhatsApp
+      const waNumber = '6282211221909';
+      const targetUrl = `https://wa.me/${waNumber}?text=${encodeURIComponent(message)}`;
+      window.open(targetUrl, '_blank', 'noopener,noreferrer');
+    });
+  }
+
+  setupWaForm();
+  document.addEventListener('astro:page-load', setupWaForm);
+</script>

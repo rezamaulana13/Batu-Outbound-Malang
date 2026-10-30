@@ -1,0 +1,964 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import WhatsAppCTA from '../../components/WhatsAppCTA.astro';
+import { render } from 'astro:content';
+import { getArticles, getPackages, articleUrl, pkgUrl, formatDate } from '../../lib/content';
+import { waMessages, site } from '../../data/site';
+
+export async function getStaticPaths() {
+  const articles = await getArticles();
+  const packages = await getPackages();
+  return articles.map((article, index) => {
+    const prev = index > 0 ? articles[index - 1] : null;
+    const next = index < articles.length - 1 ? articles[index + 1] : null;
+    return {
+      params: { slug: article.id },
+      props: { article, articles, packages, prev, next },
+    };
+  });
+}
+
+const { article, articles, packages, prev, next } = Astro.props;
+const d = article.data;
+const { Content, headings } = await render(article);
+const toc = headings.filter((h) => h.depth === 2);
+const related = articles.filter((a) => a.id !== article.id).slice(0, 3);
+const relPkgs = packages.filter((p) => d.relatedPackages.includes(p.id));
+const featuredPkg = relPkgs[0] || packages[0];
+const base = Astro.site!;
+const url = new URL(articleUrl(article.id), base).href;
+
+const blog = {
+  '@context': 'https://schema.org',
+  '@type': 'BlogPosting',
+  headline: d.title,
+  description: d.description,
+  datePublished: d.publishDate.toISOString(),
+  ...(d.updatedDate ? { dateModified: d.updatedDate.toISOString() } : {}),
+  author: { '@type': 'Person', name: d.author },
+  publisher: { '@id': new URL('/#organization', base).href },
+  mainEntityOfPage: url,
+  inLanguage: 'id-ID',
+  ...(d.image ? { image: new URL(d.image, base).href } : {}),
+};
+
+const breadcrumbs = [
+  { label: 'Beranda', href: '/' },
+  { label: 'Artikel', href: '/artikel/' },
+  { label: d.title },
+];
+
+// Ringkasan Inti per artikel (Key Takeaways)
+const coreSummaryMap: Record<string, { answer: string; points: string[] }> = {
+  'panduan-memilih-paket-outbound-di-batu-malang': {
+    answer: 'Memilih paket outbound di Kota Batu harus didasarkan pada tujuan organisasi (Refreshing vs Sinergi vs Kepemimpinan), rentang usia peserta, dan kelengkapan fasilitas vendor berlisensi BNSP.',
+    points: [
+      'Pahami tujuan utama: Fun Games untuk keceriaan santai, Team Building untuk memecah sekat departemen.',
+      'Perhatikan iklim mikro pegunungan Batu (18–24°C) dan pilih venue sesuai karakter acara.',
+      'Pastikan proposal mencakup tiket lokasi, sewa lahan, makan siang prasmanan, dan asuransi resmi.',
+    ],
+  },
+  'berapa-harga-paket-outbound-di-batu-malang': {
+    answer: 'Estimasi biaya paket outbound di Batu Malang berkisar antara Rp 85.000 hingga Rp 350.000+ per orang bergantung pada jenis wahana, durasi acara, dan menu konsumsi.',
+    points: [
+      'Paket Reguler standar (Rp 135.000 – Rp 175.000/orang) adalah opsi paling efisien untuk rombongan instansi.',
+      'Waspadai vendor dengan harga di bawah Rp 50.000 yang sering menyembunyikan biaya tiket lokasi dan retribusi lahan.',
+      'Ambil paket terintegrasi (outbound + makan + dokumentasi) untuk menghemat anggaran hingga 20%.',
+    ],
+  },
+  'contoh-rundown-outbound-1-hari-untuk-perusahaan': {
+    answer: 'Rundown outbound 1 hari yang ideal berdurasi 08.00–16.00 WIB dengan pembagian fase metodis: warming up, formasi yel-yel, core competition, ISHOMA, final synergy, dan debriefing.',
+    points: [
+      'Sediakan waktu toleransi (buffer time) 15–20 menit untuk mengantisipasi keterlambatan rombongan.',
+      'Hindari permainan fisik berat pasca makan siang untuk menjaga kenyamanan pencernaan peserta.',
+      'Pastikan sesi refleksi (debriefing) bersama fasilitator BNSP tidak dipotong demi memetik hikmah nyata kerja tim.',
+    ],
+  },
+  'perbedaan-outbound-fun-games-dan-team-building': {
+    answer: 'Fun Games berfokus pada tawa lepas dan rekreasi tanpa evaluasi; Outbound berfokus pada petualangan alam dan karakter; sedangkan Team Building berfokus pada problem solving dan kinerja organisasi.',
+    points: [
+      'Fun Games cocok untuk family gathering dan reuni santai tanpa beban fisik rumit.',
+      'Outbound mengasah adaptasi dan ketahanan mental di alam bebas pegunungan.',
+      'Team Building wajib disertai sesi debriefing terstruktur oleh fasilitator BNSP untuk membenahi sinergi kerja.',
+    ],
+  },
+};
+
+const currentSummary = coreSummaryMap[article.id] || {
+  answer: d.description,
+  points: [
+    'Panduan praktis kegiatan luar ruang di Kota Wisata Batu Malang.',
+    'Didampingi tim fasilitator profesional berlisensi BNSP.',
+    'Konsultasi rundown dan survey lokasi gratis via WhatsApp.',
+  ],
+};
+---
+
+<BaseLayout
+  title={`${d.title} | Batu Outbound Malang`}
+  description={d.description}
+  path={articleUrl(article.id)}
+  image={d.image}
+  type="article"
+  published={d.publishDate}
+  modified={d.updatedDate}
+  breadcrumbs={breadcrumbs}
+  schema={[blog]}
+  waMessage={waMessages.article(d.title)}
+>
+  <!-- 01 HERO SECTION DENGAN BACKGROUND /background-hero.webp -->
+  <section class="article-hero-header">
+    <div class="container">
+      <!-- Breadcrumbs di dalam Hero -->
+      <nav class="hero-breadcrumb-nav" aria-label="Breadcrumb">
+        <Breadcrumbs items={breadcrumbs} />
+      </nav>
+
+      <!-- Judul H1 Besar & Jelas -->
+      <h1 class="hero-article-title">{d.title}</h1>
+
+      <!-- Metadata Penulis Saja -->
+      <div class="hero-meta-row">
+        <div class="hero-author-pill">
+          <img src="/avatar-3.webp" alt={d.author} width="36" height="36" class="author-mini-avatar" />
+          <span class="author-name-text">{d.author}</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 02 MAIN TWO-COLUMN LAYOUT (Konten di Kiri, Sidebar Sticky di Kanan) -->
+  <div class="container article-layout-container">
+    <div class="article-layout-grid">
+      <!-- KOLOM KIRI: MAIN ARTICLE CONTENT -->
+      <main class="article-main-content">
+        <!-- Featured Image dengan Caption -->
+        <figure class="featured-media-box">
+          <div class="featured-img-wrap">
+            <img
+              src={d.image || '/destinasi/coban-rondo.webp'}
+              alt={d.imageAlt || d.title}
+              width="1000"
+              height="580"
+              loading="eager"
+              decoding="async"
+              class="featured-photo"
+            />
+          </div>
+          {d.imageAlt && (
+            <figcaption class="featured-caption">
+              <em>{d.imageAlt}</em>
+            </figcaption>
+          )}
+        </figure>
+
+        <!-- Callout Box: Ringkasan Inti Panduan -->
+        <aside class="key-summary-callout" aria-label="Ringkasan Inti Pembahasan">
+          <h3 class="summary-title">Ringkasan Inti Panduan</h3>
+          <p class="summary-lead">
+            <strong>Jawaban Singkat:</strong> {currentSummary.answer}
+          </p>
+          <ul class="summary-points">
+            {currentSummary.points.map((pt) => (
+              <li>{pt}</li>
+            ))}
+          </ul>
+        </aside>
+
+        <!-- Box Daftar Isi (Table of Contents) - Collapsible Accordion (Buka-Tutup) -->
+        {toc.length > 1 && (
+          <details class="toc-collapsible-card" open>
+            <summary class="toc-summary-header">
+              <span class="toc-summary-title">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="toc-title-icon" aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h7" />
+                </svg>
+                Daftar Isi Pembahasan
+              </span>
+              <span class="toc-toggle-indicator">
+                <span class="toc-toggle-text">Buka / Tutup</span>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="toc-chevron-icon" aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+                </svg>
+              </span>
+            </summary>
+            <div class="toc-body">
+              <ol class="toc-ol">
+                {toc.map((h) => {
+                  const cleanedText = h.text.replace(/^\d+[\.\)]\s*/, '');
+                  return (
+                    <li>
+                      <a href={`#${h.slug}`}>{cleanedText}</a>
+                    </li>
+                  );
+                })}
+              </ol>
+            </div>
+          </details>
+        )}
+
+        <!-- Prose Konten Artikel Markdown -->
+        <div class="article-prose-body prose">
+          <Content />
+        </div>
+
+        <!-- Box Informasi Pendukung & Standar SOP Keselamatan -->
+        <section class="supportive-guidelines-box" aria-label="Informasi Pendukung & SOP Keselamatan">
+          <div class="guideline-tag">🛡️ SOP KESELAMATAN & JAMINAN VENDOR</div>
+          <h4>Penting untuk Diperhatikan Panitia Acara</h4>
+          <ul class="guideline-list">
+            <li><strong>Survey Lokasi Gratis:</strong> Lakukan survey venue bersama tim konsultan kami minimal 1–2 minggu sebelum hari kegiatan.</li>
+            <li><strong>Fasilitator Berlisensi BNSP:</strong> Seluruh modul permainan didampingi instruktur bersertifikasi resmi yang mengutamakan keselamatan (*safety first*).</li>
+            <li><strong>Proteksi Asuransi:</strong> Seluruh rombongan peserta terlindungi oleh asuransi kegiatan luar ruang.</li>
+            <li><strong>SOP Cuaca Pegunungan:</strong> Tersedia aula tertutup (*indoor shelter*) di lokasi untuk antisipasi perubahan cuaca di Kota Batu.</li>
+          </ul>
+        </section>
+
+        <!-- Contextual CTA Panel -->
+        <div class="article-cta-box text-center">
+          <h3>Tertarik Mengadakan Kegiatan Sesuai Panduan Ini?</h3>
+          <p>
+            Konsultasikan kebutuhan rundown, estimasi anggaran, dan ketersediaan lokasi outbound favorit Anda di Kota Batu bersama konsultan kami via WhatsApp.
+          </p>
+          <div class="article-cta-actions">
+            <WhatsAppCTA label="Konsultasi Gratis via WhatsApp" message={waMessages.article(d.title)} source={`artikel-${article.id}`} />
+            {featuredPkg && (
+              <a class="btn btn--secondary" href={pkgUrl(featuredPkg.id)}>
+                Lihat {featuredPkg.data.title}
+              </a>
+            )}
+          </div>
+        </div>
+
+        <!-- Navigasi Artikel (Sebelumnya & Berikutnya) -->
+        <nav class="article-nav-pagination" aria-label="Navigasi Artikel Sebelumnya dan Berikutnya">
+          <div class="nav-pag-item nav-pag-prev">
+            {prev ? (
+              <a href={articleUrl(prev.id)} class="pag-btn">
+                <span class="pag-label">← Artikel Sebelumnya</span>
+                <span class="pag-name">{prev.data.title}</span>
+              </a>
+            ) : (
+              <div class="pag-btn pag-btn--disabled">
+                <span class="pag-label">← Artikel Sebelumnya</span>
+                <span class="pag-name">Ini adalah artikel pertama</span>
+              </div>
+            )}
+          </div>
+          <div class="nav-pag-item nav-pag-next">
+            {next ? (
+              <a href={articleUrl(next.id)} class="pag-btn pag-btn--next">
+                <span class="pag-label">Artikel Berikutnya →</span>
+                <span class="pag-name">{next.data.title}</span>
+              </a>
+            ) : (
+              <div class="pag-btn pag-btn--disabled">
+                <span class="pag-label">Artikel Berikutnya →</span>
+                <span class="pag-name">Ini adalah artikel terakhir</span>
+              </div>
+            )}
+          </div>
+        </nav>
+      </main>
+
+      <!-- KOLOM KANAN: STICKY SIDEBAR -->
+      <aside class="article-sticky-sidebar">
+        <!-- 1. Profil Penulis Card (Persis Seperti Screenshot) -->
+        <div class="sidebar-card author-sidebar-card text-center">
+          <div class="author-avatar-circle">
+            <img src="/avatar-3.webp" alt={d.author} width="88" height="88" class="author-img-lg" />
+          </div>
+          <h3 class="author-card-name">{d.author}</h3>
+          <span class="author-role-badge">Lead Outbound Specialist</span>
+
+          <!-- Quick Social / Action Buttons -->
+          <div class="author-social-row">
+            <a
+              href={`https://wa.me/${site.whatsappNumber}?text=Halo%20${encodeURIComponent(d.author)}%2C%20saya%20membaca%20artikel%20Anda%20dan%20ingin%20konsultasi%20outbound.`}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="social-btn social-btn--wa"
+              aria-label="Hubungi Penulis via WhatsApp"
+              title="Chat via WhatsApp"
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91C2.13 13.66 2.59 15.36 3.45 16.86L2.05 22L7.3 20.62C8.75 21.41 10.38 21.83 12.04 21.83C17.5 21.83 21.95 17.38 21.95 11.92C21.95 9.27 20.92 6.78 19.05 4.91C17.18 3.03 14.69 2 12.04 2M12.05 3.67C14.25 3.67 16.31 4.53 17.87 6.09C19.42 7.65 20.28 9.72 20.28 11.92C20.28 16.46 16.58 20.15 12.04 20.15C10.56 20.15 9.11 19.76 7.85 19L7.55 18.83L4.43 19.65L5.26 16.61L5.06 16.29C4.24 14.99 3.81 13.47 3.81 11.91C3.81 7.37 7.5 3.67 12.05 3.67M9.53 7.35C9.36 7.35 9.08 7.41 8.85 7.66C8.62 7.91 7.97 8.52 7.97 9.76C7.97 11 8.88 12.19 9.01 12.36C9.14 12.53 10.8 15.09 13.33 16.19C15.44 17.1 15.87 16.92 16.33 16.88C16.79 16.84 17.81 16.27 18.02 15.69C18.23 15.11 18.23 14.61 18.17 14.51C18.11 14.41 17.94 14.35 17.69 14.22C17.44 14.1 16.22 13.5 16 13.41C15.77 13.33 15.61 13.29 15.44 13.54C15.28 13.79 14.8 14.35 14.66 14.51C14.52 14.68 14.37 14.7 14.12 14.57C13.87 14.45 12.82 14.1 11.58 13C10.61 12.14 9.96 11.08 9.77 10.75C9.58 10.42 9.75 10.25 9.88 10.12C10 9.99 10.14 9.81 10.27 9.66C10.4 9.5 10.44 9.38 10.52 9.21C10.6 9.05 10.56 8.9 10.5 8.78C10.44 8.66 9.96 7.48 9.76 7C9.56 6.53 9.36 6.6 9.2 6.59L8.72 6.59C8.55 6.59 8.27 6.65 8.04 6.9C7.81 7.15 7.16 7.76 7.16 9C7.16 10.24 8.07 11.43 8.2 11.6C8.33 11.77 9.99 14.33 12.52 15.43C14.63 16.34 15.06 16.16 15.52 16.12C15.98 16.08 17 15.51 17.21 14.93C17.42 14.35 17.42 13.85 17.36 13.75C17.3 13.65 17.13 13.59 16.88 13.46Z" />
+              </svg>
+            </a>
+            <a
+              href="/kontak/"
+              class="social-btn social-btn--contact"
+              aria-label="Halaman Kontak"
+              title="Hubungi Kami"
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <rect x="2" y="4" width="20" height="16" rx="2" />
+                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+              </svg>
+            </a>
+            <a
+              href="https://www.google.com/search?q=Batu+Outbound+Malang"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="social-btn social-btn--web"
+              aria-label="Profil Google"
+              title="Profil Google"
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <circle cx="12" cy="12" r="10" />
+                <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20" />
+                <path d="M2 12h20" />
+              </svg>
+            </a>
+          </div>
+
+          <p class="author-bio-text">
+            <strong>{d.author}</strong> adalah pemandu outdoor dan konsultan kegiatan alam bebas di Kota Wisata Batu Malang yang mendampingi ribuan peserta rombongan perusahaan, instansi pemerintah, dan sekolah dalam kegiatan team building dan gathering alam.
+          </p>
+        </div>
+
+        <!-- 2. Dark Promo Card: Paket Terkait Populer -->
+        {featuredPkg && (
+          <div class="sidebar-card promo-package-card">
+            <div class="promo-icon-badge">
+              <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#5eead4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="m19 20-7-14-7 14h14Z" />
+                <path d="M12 6v14" />
+              </svg>
+            </div>
+            <h3 class="promo-title">{featuredPkg.data.title}</h3>
+            <p class="promo-desc">
+              {featuredPkg.data.description.slice(0, 130)}...
+            </p>
+            <a href={pkgUrl(featuredPkg.id)} class="btn btn-promo-action">
+              Lihat Detail Paket
+            </a>
+          </div>
+        )}
+
+        <!-- 3. Artikel Terkait Lainnya (Mini Thumbnail List Seperti Screenshot) -->
+        {related.length > 0 && (
+          <div class="sidebar-card related-widget-card">
+            <h3 class="widget-title">Artikel Terkait Lainnya</h3>
+            <div class="related-mini-list">
+              {related.map((rel) => (
+                <article class="related-mini-item">
+                  <a href={articleUrl(rel.id)} class="related-thumb-link">
+                    <img
+                      src={rel.data.image || '/background-hero.webp'}
+                      alt={rel.data.title}
+                      width="64"
+                      height="64"
+                      loading="lazy"
+                      class="related-mini-img"
+                    />
+                  </a>
+                  <div class="related-mini-info">
+                    <h4 class="related-mini-title">
+                      <a href={articleUrl(rel.id)}>{rel.data.title}</a>
+                    </h4>
+                    <time datetime={rel.data.publishDate.toISOString().slice(0, 10)} class="related-mini-date">
+                      📅 {formatDate(rel.data.publishDate)}
+                    </time>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </div>
+        )}
+      </aside>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  /* ========================================================
+     01 HERO HEADER DENGAN BACKGROUND background-hero.webp
+     ======================================================== */
+  .article-hero-header {
+    position: relative;
+    background-image: linear-gradient(rgba(14, 34, 24, 0.78), rgba(14, 34, 24, 0.88)), url('/background-hero.webp');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    color: #ffffff;
+    padding: clamp(48px, 6vw, 72px) 0 clamp(40px, 5vw, 56px);
+    overflow: hidden;
+    box-shadow: inset 0 -2px 10px rgba(0, 0, 0, 0.15);
+  }
+  .hero-breadcrumb-nav {
+    margin-bottom: 20px;
+  }
+  .hero-breadcrumb-nav :global(.breadcrumbs) {
+    margin: 0;
+    padding: 0;
+  }
+  .hero-breadcrumb-nav :global(.breadcrumbs a) {
+    color: rgba(255, 255, 255, 0.8) !important;
+  }
+  .hero-breadcrumb-nav :global(.breadcrumbs a:hover) {
+    color: var(--color-primary) !important;
+  }
+  .hero-breadcrumb-nav :global(.breadcrumbs [aria-current]) {
+    color: #ffffff !important;
+    font-weight: 700;
+  }
+  .hero-breadcrumb-nav :global(.breadcrumbs li + li::before) {
+    color: rgba(255, 255, 255, 0.45);
+  }
+
+  .hero-article-title {
+    font-size: clamp(2rem, 3.8vw, 3rem);
+    font-weight: 800;
+    color: #ffffff;
+    line-height: 1.25;
+    margin: 0 0 20px 0;
+    max-width: 900px;
+    letter-spacing: -0.02em;
+    text-shadow: 0 2px 12px rgba(0, 0, 0, 0.35);
+  }
+
+  .hero-meta-row {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    font-size: 0.875rem;
+    color: rgba(255, 255, 255, 0.9);
+  }
+  .hero-author-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 700;
+  }
+  .author-mini-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--color-primary);
+  }
+  .author-name-text {
+    color: #ffffff;
+  }
+  .meta-separator {
+    color: rgba(255, 255, 255, 0.4);
+  }
+  .hero-date,
+  .hero-reading-time {
+    color: rgba(255, 255, 255, 0.85);
+  }
+  .hero-cat-badge {
+    display: inline-block;
+    padding: 3px 12px;
+    border-radius: 9999px;
+    background: rgba(46, 107, 79, 0.9);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: #ffffff;
+    font-size: 0.75rem;
+    font-weight: 800;
+  }
+
+  /* ========================================================
+     02 TWO-COLUMN LAYOUT (Konten Kiri & Sidebar Kanan)
+     ======================================================== */
+  .article-layout-container {
+    padding-top: clamp(36px, 4.5vw, 56px);
+    padding-bottom: clamp(56px, 6vw, 84px);
+  }
+  .article-layout-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 40px;
+    align-items: start;
+  }
+  @media (min-width: 1024px) {
+    .article-layout-grid {
+      grid-template-columns: minmax(0, 1fr) 340px;
+      gap: 48px;
+    }
+  }
+
+  /* ========================================================
+     KOLOM KIRI: MAIN CONTENT
+     ======================================================== */
+  .featured-media-box {
+    margin: 0 0 32px 0;
+  }
+  .featured-img-wrap {
+    position: relative;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: 0 8px 24px rgba(24, 34, 48, 0.08);
+    background: #e2e8f0;
+  }
+  .featured-photo {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    display: block;
+  }
+  .featured-caption {
+    font-size: 0.8438rem;
+    color: var(--color-muted);
+    line-height: 1.5;
+    margin-top: 10px;
+  }
+
+  /* Ringkasan Inti Callout Box (Persis Seperti Screenshot) */
+  .key-summary-callout {
+    background: #f0f8f5;
+    border: 1px solid #cce5d8;
+    border-left: 4px solid #175c4c;
+    border-radius: var(--radius-md);
+    padding: 24px 26px;
+    margin-bottom: 32px;
+  }
+  .summary-title {
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: #175c4c;
+    margin: 0 0 10px 0;
+  }
+  .summary-lead {
+    font-size: 0.9688rem;
+    color: var(--color-ink);
+    line-height: 1.6;
+    margin: 0 0 14px 0;
+  }
+  .summary-points {
+    margin: 0;
+    padding-left: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    font-size: 0.9063rem;
+    color: var(--color-text);
+  }
+  .summary-points li {
+    line-height: 1.55;
+  }
+
+  /* Daftar Isi Pembahasan (TOC) - Accordion Buka / Tutup */
+  .toc-collapsible-card {
+    background: #ffffff;
+    border: 1px solid #d8e5de;
+    border-radius: var(--radius-lg);
+    margin-bottom: 36px;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(24, 34, 48, 0.04);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+  .toc-collapsible-card:hover {
+    border-color: #175c4c;
+    box-shadow: 0 4px 16px rgba(23, 92, 76, 0.08);
+  }
+  .toc-summary-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 22px;
+    cursor: pointer;
+    user-select: none;
+    background: #f8faf8;
+    border-bottom: 1px solid transparent;
+    transition: background 0.2s ease;
+  }
+  .toc-summary-header:hover {
+    background: #edf5f0;
+  }
+  .toc-collapsible-card[open] .toc-summary-header {
+    border-bottom: 1px solid #e1ece5;
+    background: #f3f8f5;
+  }
+  .toc-summary-header::-webkit-details-marker {
+    display: none;
+  }
+  .toc-summary-header {
+    list-style: none;
+  }
+  .toc-summary-title {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1.0625rem;
+    font-weight: 800;
+    color: var(--color-ink);
+  }
+  .toc-title-icon {
+    color: #175c4c;
+    flex-shrink: 0;
+  }
+  .toc-toggle-indicator {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.8125rem;
+    font-weight: 700;
+    color: #175c4c;
+  }
+  .toc-chevron-icon {
+    transition: transform 0.25s ease;
+    color: #175c4c;
+  }
+  .toc-collapsible-card[open] .toc-chevron-icon {
+    transform: rotate(180deg);
+  }
+  .toc-body {
+    padding: 18px 24px 22px 24px;
+    background: #ffffff;
+  }
+  .toc-ol {
+    margin: 0;
+    padding-left: 1.35rem;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    font-size: 0.9375rem;
+  }
+  .toc-ol li {
+    color: #175c4c;
+    line-height: 1.5;
+  }
+  .toc-ol li a {
+    color: var(--color-ink);
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.15s ease;
+  }
+  .toc-ol li a:hover {
+    color: #175c4c;
+    text-decoration: underline;
+  }
+
+  /* Prose Konten */
+  .article-prose-body {
+    font-size: 1.0625rem;
+    line-height: 1.85;
+    color: var(--color-ink);
+  }
+
+  /* Box SOP Keselamatan */
+  .supportive-guidelines-box {
+    margin-top: 48px;
+    background: #f8faf6;
+    border: 1px solid #d4dfd6;
+    border-radius: var(--radius-lg);
+    padding: 28px;
+  }
+  .guideline-tag {
+    font-size: 0.75rem;
+    font-weight: 800;
+    color: #175c4c;
+    letter-spacing: 0.05em;
+    margin-bottom: 8px;
+  }
+  .supportive-guidelines-box h4 {
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: var(--color-ink);
+    margin: 0 0 14px 0;
+  }
+  .guideline-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .guideline-list li {
+    font-size: 0.9375rem;
+    line-height: 1.55;
+    position: relative;
+    padding-left: 24px;
+    color: var(--color-text);
+  }
+  .guideline-list li::before {
+    content: "✓";
+    position: absolute;
+    left: 0;
+    color: #175c4c;
+    font-weight: 800;
+  }
+
+  /* CTA Box */
+  .article-cta-box {
+    margin-top: 40px;
+    background: linear-gradient(135deg, #f7faf8 0%, #edf6f0 100%);
+    border: 1px solid #c8ded0;
+    border-radius: var(--radius-lg);
+    padding: 32px 24px;
+  }
+  .article-cta-box h3 {
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: #175c4c;
+    margin: 0 0 10px 0;
+  }
+  .article-cta-box p {
+    font-size: 0.9688rem;
+    color: var(--color-muted);
+    max-width: 600px;
+    margin: 0 auto 20px auto;
+    line-height: 1.6;
+  }
+  .article-cta-actions {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  /* Navigasi Artikel (Prev & Next) */
+  .article-nav-pagination {
+    margin-top: 36px;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  @media (min-width: 640px) {
+    .article-nav-pagination {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+  .pag-btn {
+    display: flex;
+    flex-direction: column;
+    padding: 16px 20px;
+    background: #ffffff;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    text-decoration: none;
+    transition: all 0.2s ease;
+    height: 100%;
+  }
+  .pag-btn:hover:not(.pag-btn--disabled) {
+    border-color: #175c4c;
+    box-shadow: 0 4px 14px rgba(23, 92, 76, 0.1);
+    transform: translateY(-2px);
+  }
+  .pag-btn--disabled {
+    background: #f8faf6;
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+  .pag-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #175c4c;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-bottom: 6px;
+  }
+  .pag-name {
+    font-size: 0.9375rem;
+    font-weight: 700;
+    color: var(--color-ink);
+    line-height: 1.35;
+  }
+
+  /* ========================================================
+     KOLOM KANAN: STICKY SIDEBAR
+     ======================================================== */
+  .article-sticky-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    position: sticky;
+    top: 90px;
+  }
+  .sidebar-card {
+    background: #ffffff;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: 24px;
+    box-shadow: 0 4px 16px rgba(24, 34, 48, 0.04);
+  }
+
+  /* 1. Author Sidebar Card (Persis Seperti Screenshot) */
+  .author-sidebar-card {
+    border-color: #d8e6de;
+    text-align: center;
+  }
+  .author-avatar-circle {
+    width: 88px;
+    height: 88px;
+    border-radius: 50%;
+    margin: 0 auto 14px auto;
+    overflow: hidden;
+    background: #eef7f2;
+    border: 3px solid #175c4c;
+    box-shadow: 0 4px 14px rgba(23, 92, 76, 0.18);
+  }
+  .author-img-lg {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 25%;
+    display: block;
+  }
+  .author-card-name {
+    font-size: 1.1875rem;
+    font-weight: 800;
+    color: var(--color-ink);
+    margin: 0 0 6px 0;
+    text-align: center;
+  }
+  .author-role-badge {
+    display: inline-block;
+    padding: 3px 12px;
+    border-radius: 9999px;
+    background: #e6f4ed;
+    color: #175c4c;
+    font-size: 0.75rem;
+    font-weight: 800;
+    margin-bottom: 14px;
+    text-align: center;
+  }
+  .author-social-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+  .social-btn {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: #f1f5f2;
+    border: 1px solid #d4dfd6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    color: #175c4c;
+    transition: all 0.2s ease;
+  }
+  .social-btn:hover {
+    background: #175c4c;
+    color: #ffffff;
+    border-color: #175c4c;
+    transform: translateY(-2px);
+  }
+  .author-bio-text {
+    font-size: 0.8125rem;
+    color: var(--color-muted);
+    line-height: 1.6;
+    margin: 0;
+    border-top: 1px solid var(--color-border);
+    padding-top: 14px;
+    text-align: center;
+  }
+
+  /* 2. Dark Promo Package Card (Persis Seperti Screenshot) */
+  .promo-package-card {
+    background: #0e382f;
+    color: #ffffff;
+    border: none;
+    text-align: center;
+    box-shadow: 0 8px 24px rgba(14, 56, 47, 0.25);
+  }
+  .promo-icon-badge {
+    font-size: 2.2rem;
+    margin-bottom: 12px;
+    line-height: 1;
+  }
+  .promo-title {
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: #ffffff;
+    margin: 0 0 8px 0;
+    line-height: 1.3;
+  }
+  .promo-desc {
+    font-size: 0.8438rem;
+    color: rgba(255, 255, 255, 0.85);
+    line-height: 1.55;
+    margin: 0 0 18px 0;
+  }
+  .btn-promo-action {
+    display: block;
+    width: 100%;
+    padding: 10px 16px;
+    border-radius: var(--radius-md);
+    background: #00a884;
+    color: #ffffff;
+    font-size: 0.875rem;
+    font-weight: 800;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 12px rgba(0, 168, 132, 0.35);
+  }
+  .btn-promo-action:hover {
+    background: var(--color-primary);
+    color: var(--color-ink);
+    transform: translateY(-2px);
+  }
+
+  /* 3. Artikel Terkait Lainnya (Mini Thumbnail Widget) */
+  .related-widget-card {
+    padding: 20px 22px;
+  }
+  .widget-title {
+    font-size: 1.0625rem;
+    font-weight: 800;
+    color: var(--color-ink);
+    margin: 0 0 16px 0;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #edf2ee;
+  }
+  .related-mini-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .related-mini-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .related-thumb-link {
+    flex-shrink: 0;
+    width: 64px;
+    height: 64px;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #e2e8f0;
+  }
+  .related-mini-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+  }
+  .related-thumb-link:hover .related-mini-img {
+    transform: scale(1.08);
+  }
+  .related-mini-info {
+    flex-grow: 1;
+  }
+  .related-mini-title {
+    font-size: 0.875rem;
+    font-weight: 700;
+    line-height: 1.35;
+    margin: 0 0 4px 0;
+  }
+  .related-mini-title a {
+    color: var(--color-ink);
+    text-decoration: none;
+    transition: color 0.15s ease;
+  }
+  .related-mini-title a:hover {
+    color: #175c4c;
+  }
+  .related-mini-date {
+    font-size: 0.75rem;
+    color: var(--color-muted);
+  }
+</style>
