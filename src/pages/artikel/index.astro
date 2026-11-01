@@ -97,12 +97,12 @@ const breadcrumbs = [
                 height="500"
                 class="featured-img"
               />
-              <span class="badge-featured-label">⭐ Artikel Utama</span>
+              <span class="badge-featured-label">Artikel Utama</span>
             </div>
             <div class="featured-body">
               <div class="featured-meta-top">
                 <span class="badge-cat-pill">{featured.data.category}</span>
-                <span class="meta-read-time">⏱️ {featured.data.readingMinutes || 5} menit baca</span>
+                <span class="meta-read-time">{featured.data.readingMinutes || 5} menit baca</span>
               </div>
               <h3 class="featured-title">
                 <a href={articleUrl(featured.id)}>{featured.data.title}</a>
@@ -110,9 +110,9 @@ const breadcrumbs = [
               <p class="featured-desc">{featured.data.description}</p>
               <div class="featured-foot">
                 <div class="author-info">
-                  <span class="author-name">✍️ {featured.data.author}</span>
+                  <span class="author-name">{featured.data.author}</span>
                   <time class="publish-date" datetime={featured.data.publishDate.toISOString().slice(0, 10)}>
-                    📅 {formatDate(featured.data.publishDate)}
+                    {formatDate(featured.data.publishDate)}
                   </time>
                 </div>
                 <a href={articleUrl(featured.id)} class="btn btn--primary btn-read-featured">

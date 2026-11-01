@@ -91,7 +91,7 @@ const categoryCounts = galleryCategories.reduce((acc, cat) => {
               />
               <div class="gallery-badges">
                 <span class="badge-cat">{item.category}</span>
-                <span class="badge-loc">📍 {item.location.split(',')[0]}</span>
+                <span class="badge-loc">{item.location.split(',')[0]}</span>
               </div>
               <div class="gallery-overlay">
                 <span class="zoom-trigger">
@@ -144,7 +144,7 @@ const categoryCounts = galleryCategories.reduce((acc, cat) => {
           <p id="lightbox-desc" class="lightbox-desc"></p>
           <div class="lightbox-cta-row">
             <a id="lightbox-wa-btn" href="#" target="_blank" rel="noopener noreferrer" class="btn btn--primary">
-              💬 Tanya Paket Sesuai Foto Ini
+              Tanya Paket Sesuai Foto Ini
             </a>
           </div>
         </div>
@@ -219,7 +219,7 @@ const categoryCounts = galleryCategories.reduce((acc, cat) => {
     lbImg.src = data.src;
     lbImg.alt = data.alt || data.title;
     lbCat.textContent = data.category;
-    lbLoc.textContent = '📍 ' + data.location;
+    lbLoc.textContent = data.location;
     lbTitle.textContent = data.title;
     lbDesc.textContent = data.caption;
 

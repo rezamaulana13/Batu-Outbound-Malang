@@ -205,7 +205,7 @@ const currentSummary = coreSummaryMap[article.id] || {
 
         <!-- Box Informasi Pendukung & Standar SOP Keselamatan -->
         <section class="supportive-guidelines-box" aria-label="Informasi Pendukung & SOP Keselamatan">
-          <div class="guideline-tag">🛡️ SOP KESELAMATAN & JAMINAN VENDOR</div>
+          <div class="guideline-tag">SOP KESELAMATAN & JAMINAN VENDOR</div>
           <h4>Penting untuk Diperhatikan Panitia Acara</h4>
           <ul class="guideline-list">
             <li><strong>Survey Lokasi Gratis:</strong> Lakukan survey venue bersama tim konsultan kami minimal 1–2 minggu sebelum hari kegiatan.</li>
@@ -359,7 +359,7 @@ const currentSummary = coreSummaryMap[article.id] || {
                       <a href={articleUrl(rel.id)}>{rel.data.title}</a>
                     </h4>
                     <time datetime={rel.data.publishDate.toISOString().slice(0, 10)} class="related-mini-date">
-                      📅 {formatDate(rel.data.publishDate)}
+                      {formatDate(rel.data.publishDate)}
                     </time>
                   </div>
                 </article>
